@@ -20,5 +20,5 @@ def load_binary_df():
     Load Simulation Data For Binary Endpoints DCA
     :return pd.DataFrame that contains simple bioequivalence case
     """
-    return _load_data_from_local("df_binary.csv")
+    return _load_data_from_local("df_sim.csv")
 
