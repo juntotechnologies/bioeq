@@ -19,4 +19,5 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
     "jupyterlab>=4.3.4",
+    "notebook>=7.3.2",
 ]
