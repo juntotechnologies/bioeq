@@ -2,7 +2,7 @@
 Main bioeq code
 """
 
-import pandas as pd
+import polars as pl
 
 def asdf():
     """
@@ -29,4 +29,4 @@ class BioEq:
         self.number = number
 
         url = 'https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv'
-        self.simdata1 = pd.read_csv(url)
+        self.simdata1 = pl.read_csv(url)

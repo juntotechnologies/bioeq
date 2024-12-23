@@ -1,5 +1,5 @@
 import numpy as np
-import pandas as pd
+import polars as pl
 
 def generate_simulation_data(n_subjects=10, periods=2, time_points=None, sigma=2.0, seed=42):
     """
@@ -13,7 +13,7 @@ def generate_simulation_data(n_subjects=10, periods=2, time_points=None, sigma=2
     seed (int): Random seed for reproducibility.
 
     Returns:
-    pd.DataFrame: Simulated dataset.
+    pl.DataFrame: Simulated dataset.
     """
     if time_points is None:
         time_points = [0, 0.5, 1, 2, 4, 6, 8]

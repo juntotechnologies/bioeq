@@ -6,7 +6,6 @@ import polars as pl
 from bioeq import hello
 from bioeq import BioEq
 
-
 def test_scratch():
     """
     Test hello function
