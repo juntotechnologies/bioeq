@@ -2,6 +2,7 @@
 Main bioeq code
 """
 
+import pandas as pd
 
 def asdf():
     """
@@ -26,3 +27,6 @@ class BioEq:
 
     def __init__(self, number):
         self.number = number
+
+        url = ''
+        self.simdata = pd.read_csv()
