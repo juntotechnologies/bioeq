@@ -46,7 +46,7 @@ def generate_simulation_data(n_subjects=10, periods=2, time_points=None, sigma=2
                     'Concentration (ng/mL)': observed_concentration
                 })
 
-    return pd.DataFrame(data)
+    return pl.DataFrame(data)
 
 # Generate the dataset
 data = generate_simulation_data(n_subjects=10)
