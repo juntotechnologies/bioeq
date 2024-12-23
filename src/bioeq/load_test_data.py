@@ -1,8 +1,10 @@
 """
 This module houses user-facing simulation data-retrieval functions for end-users.
 """
+
 import os
 import pandas as pd
+
 
 def _load_data_from_local(filename):
     """
@@ -15,10 +17,10 @@ def _load_data_from_local(filename):
     file_path = os.path.join(data_dir, filename)
     return pd.read_csv(file_path)
 
-def load_binary_df():
+
+def load_sim_df():
     """
-    Load Simulation Data For Binary Endpoints DCA
-    :return pd.DataFrame that contains simple bioequivalence case
+    Load Simulation Data
+    :return pd.DataFrame
     """
     return _load_data_from_local("df_sim.csv")
-
