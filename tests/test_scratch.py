@@ -6,6 +6,7 @@ import polars as pl
 from bioeq import hello
 from bioeq import BioEq
 
+
 def test_scratch():
     """
     Test hello function
@@ -18,8 +19,7 @@ def test_load_sim_df():
     Test data loading function
     """
 
-    url = 'https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv'
+    url = "https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv"
     df_simdata1 = pl.read_csv(url)
 
-    bioeq = BioEq()
-
+    bioeq = BioEq(number=5)
