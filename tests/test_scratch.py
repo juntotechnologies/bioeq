@@ -2,9 +2,9 @@
 Scratch for initial tests, will be scrapped for more defined files later
 """
 
-import pandas as pd
+import polars as pl
 from bioeq import hello
-from bioeq.load_test_data import load_sim_df
+from bioeq import BioEq
 
 
 def test_scratch():
@@ -19,6 +19,8 @@ def test_load_sim_df():
     Test data loading function
     """
 
-    df = load_sim_df()
+    url = 'https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv'
+    df_simdata1 = pl.read_csv(url)
 
-    assert isinstance(df, pd.DataFrame)
+    bioeq = BioEq()
+
