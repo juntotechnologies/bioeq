@@ -52,7 +52,7 @@ def generate_simulation_data(n_subjects=10, periods=2, time_points=None, sigma=2
 data = generate_simulation_data(n_subjects=10)
 
 # Save to CSV
-output_file = "simulated_pk_data.csv"
+output_file = "bioeq_simdata_2.csv"
 data.to_csv(output_file, index=False)
 
 # Display first few rows of the dataset
