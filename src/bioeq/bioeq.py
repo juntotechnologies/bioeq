@@ -28,5 +28,5 @@ class BioEq:
     def __init__(self, number):
         self.number = number
 
-        url = ''
-        self.simdata = pd.read_csv()
+        url = 'https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv'
+        self.simdata1 = pd.read_csv(url)

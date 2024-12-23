@@ -27,6 +27,13 @@ This directory contains datasets and scripts for pharmacokinetics and bioequival
 
 ---
 
+## Notebooks
+
+- **`clean_simdata1.ipynb`**
+  Cleans bioeq_simdata1.csv
+
+---
+
 ## Notes
 
 These resources are for research and educational purposes related to pharmacokinetics and bioequivalence. Proper attribution is appreciated when using external datasets.
