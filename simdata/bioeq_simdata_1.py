@@ -1,7 +1,7 @@
 import numpy as np
 import polars as pl
 
-def generate_simulation_data(n_subjects=10, periods=2, time_points=None, sigma=2.0, seed=42):
+def generate_simulation_data(n_subjects=5, periods=2, time_points=None, sigma=1.0, seed=42):
     """
     Generates simulation data for a two-period, two-sequence crossover bioequivalence study.
 
@@ -49,11 +49,11 @@ def generate_simulation_data(n_subjects=10, periods=2, time_points=None, sigma=2
     return pl.DataFrame(data)
 
 # Generate the dataset
-data = generate_simulation_data(n_subjects=10)
+data = generate_simulation_data(n_subjects=5)  # Reduced to 5 subjects for minimal dataset
 
 # Save to CSV
-output_file = "bioeq_simdata_2.csv"
-data.to_csv(output_file, index=False)
+output_file = "./bioeq_simdata_1.csv"
+data.write_csv(output_file)
 
 # Display first few rows of the dataset
 print(f"Simulated data saved to {output_file}")

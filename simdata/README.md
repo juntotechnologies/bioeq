@@ -13,16 +13,16 @@ This directory contains datasets and scripts for pharmacokinetics and bioequival
   Deidentified SAS data from a contact with pharmacokinetics expertise.
 
 - **`bioeq_simdata_1.csv`**  
-  CSV version of `adpp.sas7bdat`.
+  Locally generated data created with `bioeq_simdata_1.py`.
 
 - **`bioeq_simdata_2.csv`**  
-  Locally generated data created with `bioeq_simdata_2.py`.
+  CSV version of `adpp.sas7bdat`.
 
 ---
 
 ## Scripts
 
-- **`bioeq_simdata_2.py`**  
+- **`bioeq_simdata_1.py`**  
   Generates simulation data for bioequivalence calculations in phase I clinical trials.
 
 ---
@@ -30,7 +30,7 @@ This directory contains datasets and scripts for pharmacokinetics and bioequival
 ## Notebooks
 
 - **`clean_simdata1.ipynb`**
-  Cleans bioeq_simdata1.csv
+  Cleans bioeq_simdata_2.csv
 
 ---
 

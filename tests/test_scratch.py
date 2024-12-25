@@ -3,15 +3,7 @@ Scratch for initial tests, will be scrapped for more defined files later
 """
 
 import polars as pl
-from bioeq import hello
 from bioeq import BioEq
-
-
-def test_scratch():
-    """
-    Test hello function
-    """
-    assert hello() == "Hello from bioeq!"
 
 
 def test_load_sim_df():

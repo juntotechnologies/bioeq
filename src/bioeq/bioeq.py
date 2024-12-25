@@ -5,22 +5,6 @@ Main bioeq code
 import polars as pl
 
 
-def asdf():
-    """
-    asdf
-    """
-
-    print("kshjfoweifjoi")
-
-
-def sdfg():
-    """
-    asdf
-    """
-
-    print("asdfasdfrtherg")
-
-
 class BioEq:
     """
     Main BioEq class

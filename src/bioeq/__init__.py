@@ -2,7 +2,7 @@
 __init__ file for library
 """
 
-from .bioeq import asdf, sdfg, BioEq
+from .bioeq import BioEq
 
 
 def hello() -> str:
