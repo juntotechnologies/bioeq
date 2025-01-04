@@ -18,6 +18,9 @@ This directory contains datasets and scripts for pharmacokinetics and bioequival
 - **`bioeq_simdata_2.csv`**  
   CSV version of `adpp.sas7bdat`.
 
+- **`testdata.csv`**
+  Simulation data from someone else's project: https://github.com/statist-bhfz/bioeq/blob/master/testdata.csv
+
 ---
 
 ## Scripts
