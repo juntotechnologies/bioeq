@@ -11,34 +11,45 @@ class BioEq:
     Main BioEq class
     """
 
-    def __init__(self, number):
+    def __init__(self, number, subject_col, time_col, conc_col):
         self.number = number
         url = "https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv"
         self.simdata1 = pl.read_csv(url)
+        self.subject_col = subject_col
+        self.time_col = time_col
+        self.conc_col = conc_col
 
-    def compute_auc(self, subject_col="Subject", time_col="Time", conc_col="Concentration"):
+    def compute_auc(self):
         """
-        Compute Area Under the Curve (AUC) using trapezoidal rule
+        Compute Area Under the Curve (AUC) using trapezoidal rule.
         """
+        # Validate required columns
+        required_cols = [self.subject_col, self.time_col, self.conc_col]
+        if not all(col in self.simdata1.columns for col in required_cols):
+            raise ValueError(f"Dataset is missing required columns: {required_cols}")
+        
         df = self.simdata1.clone()
-        df = df.sort([subject_col, time_col])
-        # Group by subject, apply trapezoid rule
+        df = df.sort([self.subject_col, self.time_col])
+
+        # Compute AUC for each group
         auc_df = (
-            df.groupby(subject_col)
-            .apply(
-                lambda group: np.trapz(
-                    group[conc_col].to_numpy(),
-                    group[time_col].to_numpy(),
-                )
+            df.group_by(self.subject_col).agg(
+                pl.struct([self.time_col, self.conc_col]).apply(
+                    lambda rows: np.trapz(
+                        [row[self.conc_col] for row in rows],
+                        [row[self.time_col] for row in rows],
+                    )
+                ).alias("AUC")
             )
-            .alias("AUC")
         )
         return auc_df
+
 
     def compute_ratio(self, group_col="Treatment", measure_col="AUC", test_label="Test", ref_label="Reference"):
         """
         Compute Test/Reference ratios of a chosen measure (e.g., AUC or Cmax)
         """
+
         df = self.simdata1.clone()
         auc_df = self.compute_auc()
         # Join AUC back onto original data by Subject
@@ -59,6 +70,7 @@ class BioEq:
         Perform Two One-Sided Tests (TOST) on log-transformed ratios.
         Confidence interval is 1 - alpha, typically 90% for bioequivalence.
         """
+
         ratio_df = self.compute_ratio(
             group_col=group_col, measure_col=measure_col,
             test_label=test_label, ref_label=ref_label
