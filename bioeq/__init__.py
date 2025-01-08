@@ -5,7 +5,9 @@ __init__ file for library
 import tomli  # TOML parser for Python <3.11
 from pathlib import Path
 
-from funcshauns.funcshauns import get_repo_root
+
+from .bioeq import BioEq
+
 
 # Dynamically extract version from pyproject.toml
 def get_version():
@@ -20,13 +22,13 @@ def get_version():
         pyproject_data = tomli.load(f)
     return pyproject_data["tool"]["poetry"]["version"]
 
-__version__ = get_version()
 
-from .bioeq import BioEq
-
-
+# test function
 def hello() -> str:
     """
     Initial hello function
     """
-    return "Hello from bioeq!"
+    return "Hello from bioeq! This is a test for 0.1.0.1"
+
+
+__version__ = get_version()
