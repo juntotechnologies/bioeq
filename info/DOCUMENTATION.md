@@ -54,3 +54,81 @@
     "tox -e format"
   - Automatically fix formatting:  
     "tox -e format-fix"
+
+
+---
+###### Actually, `poetry` is much better for python package development since it can seamlessly publish to test.pypi and pypi using actions
+---
+## If trying to use poetry to test package locally on jupyter notebook, read below:
+
+
+#### Setting Up a Poetry Environment with Jupyter Notebook Integration
+
+Follow these steps to create a new Poetry environment, install it as a Jupyter kernel, and test your package.
+
+## 1. Create a New Poetry Environment
+
+1. Initialize a new Poetry environment:
+    
+    `poetry init`
+    
+    Follow the prompts to set up your `pyproject.toml`.
+    
+2. If you already have an existing `pyproject.toml`, install dependencies:
+    
+    `poetry install`
+    
+
+---
+
+## 2. Add Required Dependencies
+
+Install Jupyter and any additional dependencies required for development:
+
+`poetry add notebook ipykernel --group dev`
+
+---
+
+## 3. Install the Poetry Environment as a Jupyter Kernel
+
+Run the following command to add the Poetry environment to Jupyter as a kernel:
+
+`poetry run python -m ipykernel install --user --name="bioeq-py$(python --version | cut -d' ' -f2 | cut -d. -f1-2)" --display-name "Python (bioeq, Python $(python --version | cut -d' ' -f2 | cut -d. -f1-2))"`
+
+This ensures the Poetry environment is installed as a Jupyter kernel with a clean name.
+
+---
+
+## 4. Verify Installation
+
+Check if the kernel is successfully installed:
+
+`poetry run jupyter kernelspec list`
+
+You should see an entry similar to:
+
+`bioeq /Users/your-username/Library/Jupyter/kernels/bioeq`
+
+---
+
+## 6. Run Jupyter Notebook
+
+Run Jupyter Notebook within the Poetry environment:
+
+`poetry run jupyter notebook`
+
+In the notebook interface, select the kernel matching the name you created (e.g., Python (your-env-name)).
+
+---
+
+## 7. Test the Installed Package
+
+Inside a notebook cell, verify the package and its version:
+
+`from bioeq import **version**`
+
+`print(**version**)`
+
+This should display the version defined in your `pyproject.toml`.
+
+---
