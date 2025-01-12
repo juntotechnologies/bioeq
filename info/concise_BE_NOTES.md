@@ -22,14 +22,20 @@ common terms:
 
 There are 3 types of bioequivalence calculations
 
-1. `Mean Bioequivalence` (Most commonly used and simple)
+1. `mean bioequivalence` (Most commonly used and simple)
 
 - 3 components:
   - `population-level averages`
   - `confidence-intervals` (90% CI for test/ref ratio for PK means, must fall in 80-125% range to show BE)
   - `variability considerations` (within-subject, not subject-by-formulation)
+- gold standard
+- FDA & EMA require mean BE for approving generic drugs
+- compares geometric means of PK params (Cmax & AUC) between test & ref
+- used for following reasons
+  - simple, well-established, aligns with regulatory guidelines
+  - suitable for 2 period/2 seq (2x2) crossover designs
 
-2. `Populational bioequivalence`
+1. `populational bioequivalence`
 
 - extends `mean BE` by incorporating *both* population means and variances to compare ref & test
 - key components:
@@ -38,6 +44,8 @@ There are 3 types of bioequivalence calculations
   - `statistical focus`: incorporates standard deviations of PK metrics into BE calc
   - Rarely used, more theoretical
 
-3. Individual bioequivalence
+3. `individual bioequivalence`
 
 - accounts for within-subject variability and subject-by-formulation interactions
+- reference/constant/mixed scaling are valid approaches
+- occasionally used since has special use-cases
