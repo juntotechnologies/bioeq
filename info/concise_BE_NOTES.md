@@ -35,7 +35,7 @@ There are 3 types of bioequivalence calculations
   - simple, well-established, aligns with regulatory guidelines
   - suitable for 2 period/2 seq (2x2) crossover designs
 
-1. `populational bioequivalence`
+2. `populational bioequivalence`
 
 - extends `mean BE` by incorporating *both* population means and variances to compare ref & test
 - key components:
