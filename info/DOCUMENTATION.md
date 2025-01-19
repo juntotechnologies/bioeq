@@ -1,19 +1,22 @@
-# Documentation for Using uv in Python Package Development
+# Documentation for Using `poetry` in Python Package Development
+
+###### Actually, `poetry` is much better for python package development since it can seamlessly publish to test.pypi and pypi using actions
 
 ## Setup Steps
 
 ### 1. Initialize Repository
 - Create a repository on GitHub.  
 - Clone it locally.  
-- Run "uv init --lib" to set up the Python package repository structure.
+- Run "poetry init" to set up the Python package repository structure.
 
 ### 2. Python Version Management
-- Install Python versions globally using "uv python install".  
-  Example: "uv python install 3.11".  
-- View globally installed Python versions with "uv python list".
+- Install Python versions globally using "brew install python@x.11".  
+  Example: "brew install python@3.10".  
+- View globally installed Python versions with "brew list".
 
 ### 3. Add Dependencies
-- Add development dependencies using "uv add --dev".
+- Add development dependencies using "poetry add --group dev <deps>".
+  Example: "poetry add --group dev black"
 
 ### 4. Virtual Environment (venv) Management
 - Check the active venv source using "which python" or "which python3".  
@@ -23,7 +26,7 @@
 
 ### 5. Local Package Installation
 - Install the local package for testing with:  
-  "uv pip install -e ."
+  "poetry install"
 
 ### 6. Running Tests
 
@@ -45,7 +48,7 @@
   - Ideal for interactive development workflows.
 
 #### Suggested Workflow:
-- **During Active Development**: Use pytest directly for speed and debugging.
+- **During Active Development**: Use pytest directly for speed and debugging (`poetry run pytest`) in repo root
 - **For Reproducible Testing and CI**: Use tox to ensure consistency across environments and dependencies.
 
 ### 7. Formatting Code
@@ -55,12 +58,9 @@
   - Automatically fix formatting:  
     "tox -e format-fix"
 
+---
 
----
-###### Actually, `poetry` is much better for python package development since it can seamlessly publish to test.pypi and pypi using actions
----
 ## If trying to use poetry to test package locally on jupyter notebook, read below:
-
 
 #### Setting Up a Poetry Environment with Jupyter Notebook Integration
 
@@ -78,7 +78,6 @@ Follow these steps to create a new Poetry environment, install it as a Jupyter k
     
     `poetry install`
     
-
 ---
 
 ## 2. Add Required Dependencies
