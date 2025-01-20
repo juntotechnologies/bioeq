@@ -92,9 +92,20 @@ Install Jupyter and any additional dependencies required for development:
 
 Run the following command to add the Poetry environment to Jupyter as a kernel:
 
-`poetry run python -m ipykernel install --user --name="bioeq-py$(python --version | cut -d' ' -f2 | cut -d. -f1-2)" --display-name "Python (bioeq, Python $(python --version | cut -d' ' -f2 | cut -d. -f1-2))"`
+`poetry run python -m ipykernel install \
+    --user \
+    --name="bioeq-py$(poetry run python --version | cut -d' ' -f2 | cut -d. -f1-2)" \
+    --display-name "Python (bioeq, Python $(poetry run python --version | cut -d' ' -f2 | cut -d. -f1-2))"`
 
 This ensures the Poetry environment is installed as a Jupyter kernel with a clean name.
+
+## - If you'd like to uninstall a previously created kernel, use this following command:
+
+`poetry run jupyter kernelspec uninstall <Jupyter Kernel Name>`
+
+## - If you'd like to show the current kernels:
+
+`poetry run jupyter kernelspec list`
 
 ---
 
