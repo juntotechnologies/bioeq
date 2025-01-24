@@ -21,5 +21,12 @@ class Crossover2x2:
             self.conc_col = conc_col
         
     def _validate_colvals(self):
-        assert self.simdata1.isinstance(pl.DataFrame)
+        # Check Polars DataFrame
+        if not isinstance(self.simdata1, pl.DataFrame):
+            raise TypeError("Data must be a Polars DataFrame")
+
+        # Check that all columns are present
+        for col in required_cols:
+            if col not in self.simdata1.columns:
+                raise ValueError(f"Missing required column: {col}")
 
