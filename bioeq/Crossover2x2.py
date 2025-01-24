@@ -12,8 +12,8 @@ class Crossover2x2:
     """
 
     def __init__(self, subject_col, seq_col, period_col, time_col, conc_col):
-            url = "https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv"
-            self.simdata1 = pl.read_csv(url)
+            url１ = "https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv"
+            self.simdata1 = pl.read_csv(url１)
             self.subject_col = subject_col
             self.seq_col = seq_col
             self.period_col = period_col
@@ -22,3 +22,4 @@ class Crossover2x2:
         
     def _validate_colvals(self):
         assert self.simdata1.isinstance(pl.DataFrame)
+

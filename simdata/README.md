@@ -6,8 +6,8 @@ This directory contains datasets and scripts for pharmacokinetics and bioequival
 
 ## Datasets
 
-- **`BE_Data (Sungpil Han).csv`**  
-  Simulation data provided by Sungpil Han, who developed an R package.
+- **`be_simdata.csv`**  
+  Simulation data provided by Sungpil Han, who developed an R package for bioequivalence (BE).
 
 - **`adpp.sas7bdat`**  
   Deidentified SAS data from a contact with pharmacokinetics expertise.
