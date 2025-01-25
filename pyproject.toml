@@ -5,6 +5,9 @@ description = "A Python package for performing bioequivalence calculations and a
 authors = ["Shaun Porwal <shaun.porwal@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+packages = [
+    { include = "bioeq" }
+]
 
 [tool.poetry.dependencies]
 python = ">=3.10"
