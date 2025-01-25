@@ -1,0 +1,9 @@
+site_name: bioeq
+theme:
+  name: material
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [bieoq]  # Update this to your package location
