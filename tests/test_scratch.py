@@ -94,47 +94,31 @@ from bioeq import BioEq, Crossover2x2  # Assuming the class is in a file named b
 #     assert "Concentration" in bioeq.simdata1.columns
 #     assert bioeq.simdata1.shape == (4, 5)
 
-
-def test_basics():
-
-    # Crossover2x2()
-    # BioEq(conc_col = 'Conc', period_col = 'Period', seq_col = 'Sequence', subject_col='Subject', time_col='Time')
+@pytest.fixture
+def pull_simdata():
     simdata = pl.read_csv(
         source="https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv"
     )
+    return simdata
 
-    print(simdata)
-
-    # crossover1 = Crossover2x2(
-    #     data=simdata,
-    #     subject_col="Subject",
-    #     seq_col="Sequence",
-    #     period_col="Period",
-    #     time_col="Time",
-    #     conc_col="Conc",
-    # )
-
-    # print(crossover1)
-
+# AHA! Can put the fixture without the parentheses as a parameter and THEN I can use it in the test :)!!
+def test_basics(pull_simdata):
 
     # Crossover2x2()
+    # BioEq(conc_col = 'Conc', period_col = 'Period', seq_col = 'Sequence', subject_col='Subject', time_col='Time')
+    print(pull_simdata)
 
-    co_class = Crossover2x2(
-        data=simdata,
-        subject_col="SubjectID",
-        seq_col="Sequence",
-        period_col="Period",
-        time_col="Time (hr)",
-        conc_col="Concentration (ng/mL)",
-    )
+    # co_class = Crossover2x2(
+    #     data=simdata,
+    #     subject_col="SubjectID",
+    #     seq_col="Sequence",
+    #     period_col="Period",
+    #     time_col="Time (hr)",
+    #     conc_col="Concentration (ng/mL)",
+    # )
 
-    print(co_class)
+    # print(co_class)
 
-    pass
-
-
-@pytest.fixture
-def pull_simdata():
     pass
 
 def test_calculate_auc():
