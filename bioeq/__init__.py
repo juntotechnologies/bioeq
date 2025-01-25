@@ -5,8 +5,8 @@ __init__ file for library
 import tomli  # TOML parser for Python <3.11
 from pathlib import Path
 
-from .bioeq import BioEq, Crossover2x2
-
+from .bioeq import BioEq
+from .crossover2x2 import Crossover2x2
 
 # Dynamically extract version from pyproject.toml
 def get_version():

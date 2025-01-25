@@ -22,6 +22,18 @@ jobs:
           pip install mkdocs-material mkdocstrings[python] mkdocs
           pip install -e .
           
+      - name: Create docs structure
+        run: |
+          mkdir -p docs
+          echo "# BioEQ Documentation" > docs/index.md
+          echo "site_name: BioEQ
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]" > mkdocs.yml
+          
       - name: Build docs
         run: mkdocs build
         

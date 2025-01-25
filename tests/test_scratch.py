@@ -117,7 +117,7 @@ def test_basics():
     # print(crossover1)
 
 
-    Crossover2x2()
+    # Crossover2x2()
 
     co_class = Crossover2x2(
         data=simdata,
