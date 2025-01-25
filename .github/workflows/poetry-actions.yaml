@@ -5,8 +5,8 @@ on:
       - main
     tags:
       - "*"
-
   pull_request:
+
 jobs:
   test:
     name: Run Tests
@@ -20,12 +20,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: pip install poetry
-      - run: |
+      - name: Install dependencies
+        run: |
+          poetry config virtualenvs.create false
           poetry install --with dev
-          rm -rf .pytest_cache
-          poetry run pip install -e .
-          python -c "import bioeq; print(bioeq.__file__)"
-      - run: poetry run pytest -v
+      - name: Run tests
+        run: poetry run pytest -v
 
   publish-to-testpypi:
     if: github.ref == 'refs/heads/main'
