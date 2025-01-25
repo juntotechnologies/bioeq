@@ -15,7 +15,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
           
       - name: Install dependencies
         run: |
@@ -26,13 +26,15 @@ jobs:
         run: |
           mkdir -p docs
           echo "# BioEQ Documentation" > docs/index.md
-          echo "site_name: BioEQ
-plugins:
-  - search
-  - mkdocstrings:
-      handlers:
-        python:
-          paths: [.]" > mkdocs.yml
+          cat > mkdocs.yml << EOL
+          site_name: BioEQ
+          plugins:
+            - search
+            - mkdocstrings:
+                handlers:
+                  python:
+                    paths: [.]
+          EOL
           
       - name: Build docs
         run: mkdocs build
@@ -41,5 +43,5 @@ plugins:
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: \${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./site
