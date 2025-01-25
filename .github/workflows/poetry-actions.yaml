@@ -4,7 +4,8 @@ on:
     branches:
       - main
     tags:
-      - '*'
+      - "*"
+
   pull_request:
 jobs:
   test:
@@ -21,8 +22,10 @@ jobs:
       - run: pip install poetry
       - run: |
           poetry install --with dev
+          rm -rf .pytest_cache
           poetry run pip install -e .
-      - run: poetry run pytest
+          python -c "import bioeq; print(bioeq.__file__)"
+      - run: poetry run pytest -v
 
   publish-to-testpypi:
     if: github.ref == 'refs/heads/main'

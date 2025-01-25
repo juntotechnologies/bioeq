@@ -2,6 +2,7 @@ import pytest
 import polars as pl
 from bioeq import BioEq, Crossover2x2  # Assuming the class is in a file named bioeq.py
 
+
 # @pytest.fixture
 # def mock_data():
 #     """
@@ -94,19 +95,21 @@ from bioeq import BioEq, Crossover2x2  # Assuming the class is in a file named b
 #     assert "Concentration" in bioeq.simdata1.columns
 #     assert bioeq.simdata1.shape == (4, 5)
 
+
 @pytest.fixture
-def pull_simdata():
+def pull_simdata1():
     simdata = pl.read_csv(
         source="https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv"
     )
     return simdata
 
+
 # AHA! Can put the fixture without the parentheses as a parameter and THEN I can use it in the test :)!!
-def test_basics(pull_simdata):
+def test_basics(pull_simdata1):
 
     # Crossover2x2()
     # BioEq(conc_col = 'Conc', period_col = 'Period', seq_col = 'Sequence', subject_col='Subject', time_col='Time')
-    print(pull_simdata)
+    print(pull_simdata1)
 
     # co_class = Crossover2x2(
     #     data=simdata,
@@ -120,6 +123,7 @@ def test_basics(pull_simdata):
     # print(co_class)
 
     pass
+
 
 def test_calculate_auc():
     # Crossover2x2(
