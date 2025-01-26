@@ -13,7 +13,7 @@ class Crossover2x2:
     """
 
     def __init__(self, data, subject_col, seq_col, period_col, time_col, conc_col):
-        url１ = "https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv"
+        url1 = "https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv"
         self.simdata = pl.read_csv(source=url1)
         self.data = data
 
