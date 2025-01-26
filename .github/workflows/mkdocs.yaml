@@ -2,26 +2,26 @@ name: Generate Docs
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-          
+          python-version: "3.10"
+
       - name: Install dependencies
         run: |
           pip install mkdocs-material mkdocstrings[python] mkdocs
           pip install -e .
-          
+
       - name: Create docs structure
         run: |
           mkdir -p docs
@@ -35,10 +35,10 @@ jobs:
                   python:
                     paths: [.]
           EOL
-          
+
       - name: Build docs
         run: mkdocs build
-        
+
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3

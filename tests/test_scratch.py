@@ -1,7 +1,11 @@
 import pytest
 import polars as pl
-from bioeq import BioEq, Crossover2x2  # Assuming the class is in a file named bioeq.py
 
+from bioeq.crossover2x2 import (
+    Crossover2x2,
+)  # directly importing like this preferred for test files
+
+# import bioeq
 
 # @pytest.fixture
 # def mock_data():
@@ -17,7 +21,6 @@ from bioeq import BioEq, Crossover2x2  # Assuming the class is in a file named b
 #             "Concentration": [0.0, 5.0, 0.0, 3.0],
 #         }
 #     )
-
 
 # @pytest.fixture
 # def bioeq1(mock_data):
@@ -97,28 +100,30 @@ from bioeq import BioEq, Crossover2x2  # Assuming the class is in a file named b
 
 
 @pytest.fixture
-def pull_simdata1():
-    simdata = pl.read_csv(
+def df_simdata1():
+    df_simdata1 = pl.read_csv(
         source="https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv"
     )
-    return simdata
+    return df_simdata1
 
 
 # AHA! Can put the fixture without the parentheses as a parameter and THEN I can use it in the test :)!!
-def test_basics(pull_simdata1):
+def test_basics(df_simdata1):
 
     # Crossover2x2()
     # BioEq(conc_col = 'Conc', period_col = 'Period', seq_col = 'Sequence', subject_col='Subject', time_col='Time')
-    print(pull_simdata1)
+    print(df_simdata1)
 
-    # co_class = Crossover2x2(
-    #     data=simdata,
-    #     subject_col="SubjectID",
-    #     seq_col="Sequence",
-    #     period_col="Period",
-    #     time_col="Time (hr)",
-    #     conc_col="Concentration (ng/mL)",
-    # )
+    co_class = Crossover2x2(
+        data=df_simdata1,
+        subject_col="SubjectID",
+        seq_col="Sequence",
+        period_col="Period",
+        time_col="Time (hr)",
+        conc_col="Concentration (ng/mL)",
+    )
+
+    print(co_class.calculate_auc())
 
     # print(co_class)
 
