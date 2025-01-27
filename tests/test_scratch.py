@@ -1,7 +1,6 @@
 import pytest
 import polars as pl
-from bioeq.crossover2x2 import Crossover2x2
-from bioeq.bioeq import BioEq
+from bioeq import BioEq, Crossover2x2
 
 
 @pytest.fixture
