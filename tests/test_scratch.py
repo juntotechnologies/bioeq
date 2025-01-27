@@ -1,9 +1,11 @@
 import pytest
 import polars as pl
 
-from bioeq.crossover2x2 import (
-    Crossover2x2,
-)  # directly importing like this preferred for test files
+from bioeq import Crossover2x2
+
+# from bioeq.crossover2x2 import (
+#     Crossover2x2,
+# )  # directly importing like this preferred for test files
 
 # import bioeq
 
