@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - "**" # To run tests for all branches
     tags:
       - "*"
   pull_request:
