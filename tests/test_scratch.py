@@ -3,10 +3,6 @@ import polars as pl
 
 from bioeq import Crossover2x2
 
-# from bioeq.crossover2x2 import (
-#     Crossover2x2,
-# )  # directly importing like this preferred for test files
-
 # import bioeq
 
 # @pytest.fixture
