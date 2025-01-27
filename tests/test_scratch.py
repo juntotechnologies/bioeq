@@ -20,6 +20,11 @@
 # #         }
 # #     )
 
+
+def test_simple_func():
+    pass
+
+
 # # @pytest.fixture
 # # def bioeq1(mock_data):
 # #     """
