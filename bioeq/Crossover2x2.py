@@ -1,5 +1,5 @@
 """
-2x2 Crossover Design Code
+2x2 crossover Design Code
 """
 
 import polars as pl
@@ -7,9 +7,9 @@ import numpy as np
 from scipy.stats import t
 
 
-class Crossover2x2:
+class crossover2x2:
     """
-    Crossover2x2 Class
+    crossover2x2 Class
     """
 
     def __init__(self, data, subject_col, seq_col, period_col, time_col, conc_col):
