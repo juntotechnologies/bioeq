@@ -33,9 +33,15 @@ jobs:
 
       - name: Debug package structure
         run: |
-          poetry install -v  # verbose installation
-          poetry run python -c "import bioeq; print(bioeq.__file__)"
-          poetry run python -c "from bioeq import Crossover2x2; print(Crossover2x2.__module__)"
+          poetry install -v
+          echo "Package structure:"
+          find bioeq -type f -name "*.py"
+          echo "Init contents:"
+          cat bioeq/__init__.py
+          echo "Python path:"
+          poetry run python -c "import sys; print('\n'.join(sys.path))"
+          echo "Import test:"
+          poetry run python -c "from bioeq.crossover2x2 import Crossover2x2; print('Successfully imported Crossover2x2')"
 
       - name: Run Tests
         run: poetry run pytest -v
