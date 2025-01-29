@@ -7,12 +7,21 @@ import numpy as np
 from scipy.stats import t
 
 
-class crossover2x2:
+class Crossover2x2:
     """
-    crossover2x2 Class
+    Crossover2x2 Class
     """
 
-    def __init__(self, data, subject_col, seq_col, period_col, time_col, conc_col):
+    def __init__(
+        self,
+        data,
+        subject_col,
+        seq_col,
+        period_col,
+        time_col,
+        conc_col,
+        form_col,
+    ):
         url1 = "https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv"
         self.simdata = pl.read_csv(source=url1)
         self.data = data
@@ -22,6 +31,7 @@ class crossover2x2:
         self.period_col = period_col
         self.time_col = time_col
         self.conc_col = conc_col
+        self.form_col = form_col
 
         self._validate_data()
         self._validate_colvals()
@@ -33,7 +43,18 @@ class crossover2x2:
 
     def _validate_colvals(self):
         # Check that all columns are present
-        pass
+        list_defined_columns = [
+            self.subject_col,
+            self.seq_col,
+            self.period_col,
+            self.time_col,
+            self.conc_col,
+            self.form_col,
+        ]
+
+        for col_name in list_defined_columns:
+            if col_name not in self.data.columns:
+                raise ValueError(f"Required column '{col_name}' not found in dataset")
 
     def calculate_auc(self):
         pass
