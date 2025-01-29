@@ -52,9 +52,16 @@ class Crossover2x2:
             self.form_col,
         ]
 
-        for col_name in list_defined_columns:
-            if col_name not in self.data.columns:
-                raise ValueError(f"Required column '{col_name}' not found in dataset")
+        missing_columns = [
+            col_name
+            for col_name in list_defined_columns
+            if col_name not in self.data.columns
+        ]
+
+        if missing_columns:
+            raise ValueError(
+                f"Required column(s) not found in dataset: {', '.join(missing_columns)}"
+            )
 
     def calculate_auc(self):
         pass
