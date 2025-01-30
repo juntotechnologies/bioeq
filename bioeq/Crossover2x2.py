@@ -64,4 +64,8 @@ class Crossover2x2:
             )
 
     def calculate_auc(self):
+        """
+        Calculate AUC of drug concentration in bloodstream.
+        """
+
         pass
