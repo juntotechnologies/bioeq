@@ -33,10 +33,9 @@ jobs:
 
           ## API Documentation
 
-          ::: bioeq
+          ::: bioeq.crossover2x2
               options:
                 members: null
-                show_submodules: true
           EOF
           cat > mkdocs.yml << 'EOF'
           site_name: BioEQ
