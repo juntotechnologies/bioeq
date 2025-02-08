@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **[2025-02-07]**
 
-# [0.1.1] - 2025-02-07
+# [0.1.1] - 2025-02-08
 
 - After setting up basic infra, added [calculate_auc](https://github.com/juntotechnologies/bioeq/blob/main/bioeq/Crossover2x2.py) function.
 
