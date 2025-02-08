@@ -63,29 +63,16 @@ class Crossover2x2:
                 f"Required column(s) not found in dataset: {', '.join(missing_columns)}"
             )
 
-    def _integrate_group(self, group_df: pl.DataFrame) -> pl.DataFrame:
-        """
-        Compute AUC using trapezoidal rule for a group.
-        """
-        group_df = group_df.sort(self.time_col)
-        times = group_df[self.time_col].to_numpy()
-        concentrations = group_df[self.conc_col].to_numpy()
-        auc_val = np.trapz(concentrations, times)
-        return pl.DataFrame(
-            {
-                self.subject_col: [group_df[self.subject_col][0]],
-                self.period_col: [group_df[self.period_col][0]],
-                self.form_col: [group_df[self.form_col][0]],
-                "AUC": [auc_val],
-            }
-        )
 
-    def calculate_auc(self):
-        """
-        Calculate area under the concentration-time curve (AUC) using the trapezoidal rule.
-        AUC is computed for each subject in each period and for each formulation.
-        """
-        auc_df = self.data.groupby(
-            [self.subject_col, self.period_col, self.form_col]
-        ).apply(self._integrate_group)
-        return auc_df
+def calculate_auc(self):
+    # Convert each row to a dictionary and compute AUC using np.trapezoid (with y=concentrations, x=times)
+
+    auc_vals = [
+        np.trapezoid(row["concentrations"], row["times"])
+        for row in grouped_df.to_dicts()
+    ]
+
+    # Add the computed AUC values as a new column
+    grouped_df = grouped_df.with_columns(pl.Series("AUC", auc_vals))
+
+    return grouped_df
