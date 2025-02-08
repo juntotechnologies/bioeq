@@ -30,15 +30,6 @@ def get_version():
         pyproject_data = tomli.load(f)
     return pyproject_data["tool"]["poetry"]["version"]
 
-
-# test function
-def hello() -> str:
-    """
-    Initial hello function
-    """
-    return "Hello from bioeq! This is a test for 0.1.0.1"
-
-
 __version__ = get_version()
 ```
 
