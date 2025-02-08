@@ -42,9 +42,14 @@ jobs:
             - mkdocstrings:
                 handlers:
                   python:
-                    paths: [bioeq]
-                    show_private: false
-                    show_special_members: false
+                    options:
+                      members: true
+                      inherited_members: false
+                      filters:
+                        - "!^_[^_]"
+                        - "!^__init__$"
+                      group_by_category: true
+                      members_order: alphabetical
           EOF
 
       - name: Build docs
