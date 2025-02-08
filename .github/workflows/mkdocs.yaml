@@ -35,7 +35,7 @@ jobs:
 
           ::: bioeq
               options:
-                members: false
+                members: null
                 show_submodules: true
           EOF
           cat > mkdocs.yml << 'EOF'
@@ -52,6 +52,7 @@ jobs:
                         - "!^_[^_]"
                         - "!^__all__$"
                         - "!^__version__$"
+                        - "!^__init__$"
                       group_by_category: true
                       members_order: alphabetical
           EOF

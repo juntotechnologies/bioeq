@@ -22,6 +22,7 @@ ipykernel = "^6.29.5"
 notebook = "^7.3.2"
 tomli = "^2.2.1"
 toml = "^0.10.2"
+mkdocs = "^1.6.1"
 
 [build-system]
 requires = ["poetry-core"]
