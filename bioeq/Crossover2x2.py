@@ -63,16 +63,25 @@ class Crossover2x2:
                 f"Required column(s) not found in dataset: {', '.join(missing_columns)}"
             )
 
+    def calculate_auc(self):
+        # Convert each row to a dictionary and compute AUC using np.trapezoid (with y=concentrations, x=times)
+        grouped_df = self.data.group_by(
+            [self.subject_col, self.period_col, self.form_col]
+        ).agg(
+            [
+                pl.col(self.time_col),
+                pl.col(self.conc_col),
+            ]
+        )
 
-def calculate_auc(self):
-    # Convert each row to a dictionary and compute AUC using np.trapezoid (with y=concentrations, x=times)
+        auc_vals = [
+            np.trapezoid(row[self.conc_col], row[self.time_col])
+            for row in grouped_df.to_dicts()
+        ]
 
-    auc_vals = [
-        np.trapezoid(row["concentrations"], row["times"])
-        for row in grouped_df.to_dicts()
-    ]
+        # Add the computed AUC values as a new column
+        grouped_df = grouped_df.with_columns(pl.Series("AUC", auc_vals)).sort(
+            [pl.col(self.subject_col), pl.col(self.period_col), pl.col(self.form_col)]
+        )
 
-    # Add the computed AUC values as a new column
-    grouped_df = grouped_df.with_columns(pl.Series("AUC", auc_vals))
-
-    return grouped_df
+        return grouped_df
