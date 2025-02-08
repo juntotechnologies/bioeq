@@ -64,6 +64,14 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-bs-level="2"><a href="#bioeq.__all__" class="nav-link">__all__</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#bioeq.__version__" class="nav-link">__version__</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
             <li class="nav-item" data-bs-level="2"><a href="#bioeq.Crossover2x2" class="nav-link">Crossover2x2</a>
               <ul class="nav flex-column">
               </ul>
@@ -102,6 +110,44 @@
 
 
 
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="bioeq.__all__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Crossover2x2&#39;</span><span class="p">]</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="bioeq.__version__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">__version__</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">version</span><span class="p">(</span><span class="s1">&#39;bioeq&#39;</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
 
 
 <div class="doc doc-object doc-class">
@@ -492,391 +538,6 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="bioeq.Crossover2x2.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">subject_col</span><span class="p">,</span> <span class="n">seq_col</span><span class="p">,</span> <span class="n">period_col</span><span class="p">,</span> <span class="n">time_col</span><span class="p">,</span> <span class="n">conc_col</span><span class="p">,</span> <span class="n">form_col</span><span class="p">)</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Initialize the Crossover2x2 object.</p>
-<p>Loads a reference CSV into simdata, sets dataset and column attributes,
-and validates the input data.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>data</code>
-            </td>
-            <td>
-                  <code><span title="polars.DataFrame">DataFrame</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Input dataset.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>subject_col</code>
-            </td>
-            <td>
-                  <code>str</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Column name for the subject identifier.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>seq_col</code>
-            </td>
-            <td>
-                  <code>str</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Column name for the sequence.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>period_col</code>
-            </td>
-            <td>
-                  <code>str</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Column name for the period.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>time_col</code>
-            </td>
-            <td>
-                  <code>str</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Column name for time values.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>conc_col</code>
-            </td>
-            <td>
-                  <code>str</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Column name for concentration values.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>form_col</code>
-            </td>
-            <td>
-                  <code>str</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Column name for the formulation.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-            <details class="quote">
-              <summary>Source code in <code>bioeq/crossover2x2.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-    <span class="n">subject_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">seq_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">period_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">time_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">conc_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">form_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Initialize the Crossover2x2 object.</span>
-
-<span class="sd">    Loads a reference CSV into simdata, sets dataset and column attributes,</span>
-<span class="sd">    and validates the input data.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        data (pl.DataFrame): Input dataset.</span>
-<span class="sd">        subject_col (str): Column name for the subject identifier.</span>
-<span class="sd">        seq_col (str): Column name for the sequence.</span>
-<span class="sd">        period_col (str): Column name for the period.</span>
-<span class="sd">        time_col (str): Column name for time values.</span>
-<span class="sd">        conc_col (str): Column name for concentration values.</span>
-<span class="sd">        form_col (str): Column name for the formulation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">url1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv&quot;</span>
-    <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">simdata</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">url1</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="n">data</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">subject_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">subject_col</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">seq_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">seq_col</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">period_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">period_col</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">time_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">time_col</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">conc_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">conc_col</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">form_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">form_col</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">_validate_data</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_validate_colvals</span><span class="p">()</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="bioeq.Crossover2x2._validate_colvals" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_validate_colvals</span><span class="p">()</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Validate that all required columns are present in the dataset.</p>
-
-
-<p><span class="doc-section-title">Raises:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code>ValueError</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>If one or more required columns are missing.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-            <details class="quote">
-              <summary>Source code in <code>bioeq/crossover2x2.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_validate_colvals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Validate that all required columns are present in the dataset.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        ValueError: If one or more required columns are missing.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">list_defined_columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">subject_col</span><span class="p">,</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seq_col</span><span class="p">,</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">period_col</span><span class="p">,</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time_col</span><span class="p">,</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conc_col</span><span class="p">,</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">form_col</span><span class="p">,</span>
-    <span class="p">]</span>
-
-    <span class="n">missing_columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">col_name</span>
-        <span class="k">for</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="n">list_defined_columns</span>
-        <span class="k">if</span> <span class="n">col_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span>
-    <span class="p">]</span>
-
-    <span class="k">if</span> <span class="n">missing_columns</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Required column(s) not found in dataset: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_columns</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="bioeq.Crossover2x2._validate_data" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_validate_data</span><span class="p">()</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Validate that the provided data is a Polars DataFrame.</p>
-
-
-<p><span class="doc-section-title">Raises:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code>TypeError</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>If data is not an instance of pl.DataFrame.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-            <details class="quote">
-              <summary>Source code in <code>bioeq/crossover2x2.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_validate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Validate that the provided data is a Polars DataFrame.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        TypeError: If data is not an instance of pl.DataFrame.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Data must be a Polars DataFrame&quot;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
 <h3 id="bioeq.Crossover2x2.calculate_auc" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">calculate_auc</span><span class="p">()</span></code>
 
@@ -1077,5 +738,5 @@ trapezoidal rule, adds the computed AUC as a new column, and sorts the results.<
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-02-08 05:12:26.134018+00:00
+Build Date UTC : 2025-02-08 05:24:25.613877+00:00
 -->
