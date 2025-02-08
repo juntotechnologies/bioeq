@@ -28,15 +28,21 @@ jobs:
       - name: Create docs structure
         run: |
           mkdir -p docs
-          echo "# BioEQ Documentation" > docs/index.md
-          cat > mkdocs.yml << EOL
+          cat > docs/index.md << 'EOL'
+          # BioEQ Documentation
+
+          ## API Documentation
+
+          ::: bioeq
+          EOL
+          cat > mkdocs.yml << 'EOL'
           site_name: BioEQ
           plugins:
             - search
             - mkdocstrings:
                 handlers:
                   python:
-                    paths: [.]
+                    paths: [bioeq]
           EOL
 
       - name: Build docs
