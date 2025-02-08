@@ -1,11 +1,2 @@
-site_name: bioeq
-theme:
-  name: material
-plugins:
 
-- search
-- mkdocstrings:
-      handlers:
-        python:
-          paths: [bioeq]
-- gen-files
+::: bioeq.crossover2x2.Crossover2x2

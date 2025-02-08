@@ -1,10 +1,16 @@
 site_name: bioeq
 theme:
-  name: material
+  name: mkdocs
 plugins:
   - search
   - mkdocstrings:
       handlers:
         python:
-          paths: [bioeq]
-  - gen-files
+          options:
+            filters:
+              - "!^_[^_]" # Exclude names starting with a single underscore
+              - "!^__init__$" # Exclude __init__ method
+              - "!^__all__$" # Exclude __all__
+              - "!^__version__$" # Exclude __version__
+            group_by_category: true
+            members_order: alphabetical
