@@ -1,3 +1,11 @@
-# API Documentation
+site_name: bioeq
+theme:
+  name: material
+plugins:
 
-::: bioeq
+- search
+- mkdocstrings:
+      handlers:
+        python:
+          paths: [bioeq]
+- gen-files

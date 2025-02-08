@@ -7,3 +7,4 @@ plugins:
       handlers:
         python:
           paths: [bioeq]
+  - gen-files
