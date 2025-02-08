@@ -6,4 +6,4 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: [bieoq]  # Update this to your package location
+          paths: [bioeq]
