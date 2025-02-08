@@ -28,14 +28,14 @@ jobs:
       - name: Create docs structure
         run: |
           mkdir -p docs
-          cat > docs/index.md << 'EOL'
+          cat > docs/index.md << 'EOF'
           # BioEQ Documentation
 
           ## API Documentation
 
           ::: bioeq
-          EOL
-          cat > mkdocs.yml << 'EOL'
+          EOF
+          cat > mkdocs.yml << 'EOF'
           site_name: BioEQ
           plugins:
             - search
@@ -43,7 +43,9 @@ jobs:
                 handlers:
                   python:
                     paths: [bioeq]
-          EOL
+                    show_private: false
+                    show_special_members: false
+          EOF
 
       - name: Build docs
         run: mkdocs build
