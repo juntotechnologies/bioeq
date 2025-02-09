@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: Test + Publish to Test PyPY & PyPI
 
 on:
   push:
