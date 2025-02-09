@@ -1,26 +1,32 @@
-"""
-2x2 crossover Design Code
-"""
-
 import polars as pl
 import numpy as np
-from scipy.stats import t
 from typing import List
 
 
 class Crossover2x2:
     """
-    A class to perform operations on a 2x2 crossover design dataset.
+    A class to analyze a 2x2 crossover study dataset and compute bioequivalence (BE) metrics.
+
+    This class processes PK data collected from a 2x2 crossover design, a common structure for
+    bioequivalence trials where each subject receives two different formulations in two separate periods.
+
+    The class performs the following calculations:
+    - AUC (Area Under the Curve): Estimates drug exposure over time using the trapezoidal rule.
+    - Cmax (Maximum Concentration): Extracts the highest observed drug concentration.
+    - Tmax (Time to Cmax): Determines the time at which Cmax occurs.
+
+    In addition to the raw metrics, log-transformed values for AUC and Cmax are computed
+    and added to the output dataframe. Tmax remains untransformed.
 
     Attributes:
-        data (pl.DataFrame): The input dataset.
+        data (pl.DataFrame): The input dataset containing PK measurements.
         subject_col (str): Column name representing the subject identifier.
-        seq_col (str): Column name representing the sequence.
-        period_col (str): Column name representing the period.
+        seq_col (str): Column name representing the treatment sequence.
+        period_col (str): Column name representing the study period.
         time_col (str): Column name representing time values.
-        conc_col (str): Column name representing concentration values.
-        form_col (str): Column name representing the formulation.
-        simdata (pl.DataFrame): A reference dataset loaded from a remote CSV.
+        conc_col (str): Column name representing drug concentration values.
+        form_col (str): Column name representing the drug formulation (Test/Reference).
+        df_params (pl.DataFrame): A dataframe storing computed AUC, Cmax, Tmax, and the log-transformed values for AUC and Cmax.
     """
 
     def __init__(
@@ -34,54 +40,72 @@ class Crossover2x2:
         form_col: str,
     ) -> None:
         """
-        Initialize the Crossover2x2 object.
+        Initializes the Crossover2x2 class and computes bioequivalence metrics.
 
-        Loads a reference CSV into simdata, sets dataset and column attributes,
-        and validates the input data.
+        This method validates the dataset, ensures required columns exist, and sequentially
+        computes AUC, Cmax, and Tmax, along with log-transformed versions for AUC and Cmax.
 
         Args:
-            data (pl.DataFrame): Input dataset.
+            data (pl.DataFrame): The dataset containing PK data.
             subject_col (str): Column name for the subject identifier.
-            seq_col (str): Column name for the sequence.
-            period_col (str): Column name for the period.
-            time_col (str): Column name for time values.
-            conc_col (str): Column name for concentration values.
-            form_col (str): Column name for the formulation.
+            seq_col (str): Column name for the treatment sequence.
+            period_col (str): Column name for the study period.
+            time_col (str): Column name for time measurements.
+            conc_col (str): Column name for drug concentration measurements.
+            form_col (str): Column name for formulation labels (Test/Reference).
+
+        Raises:
+            TypeError: If `data` is not a Polars DataFrame.
+            ValueError: If required columns are missing in `data`.
         """
-        url1: str = (
-            "https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv"
-        )
+        # Load external simulated dataset for reference (not used in calculations)
+        url1 = "https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv"
         self.simdata: pl.DataFrame = pl.read_csv(source=url1)
+
+        # Store dataset and column names
         self.data: pl.DataFrame = data
+        self.subject_col = subject_col
+        self.seq_col = seq_col
+        self.period_col = period_col
+        self.time_col = time_col
+        self.conc_col = conc_col
+        self.form_col = form_col
 
-        self.subject_col: str = subject_col
-        self.seq_col: str = seq_col
-        self.period_col: str = period_col
-        self.time_col: str = time_col
-        self.conc_col: str = conc_col
-        self.form_col: str = form_col
-
+        # Validate input dataset structure and required columns
         self._validate_data()
         self._validate_colvals()
 
+        # Compute BE metrics in sequence
+        self.df_params = self._calculate_auc()
+        self.df_params = self._calculate_cmax()
+        self.df_params = self._calculate_tmax()
+
+        # Compute log-transformed BE metrics for AUC and Cmax and add alongside raw metrics.
+        self.df_params = self._calculate_log_transform()
+
+        # Sort final dataframe by subject identifier, formulation, and period.
+        self.df_params = self.df_params.sort(
+            [self.subject_col, self.form_col, self.period_col]
+        )
+
     def _validate_data(self) -> None:
         """
-        Validate that the provided data is a Polars DataFrame.
+        Ensures the dataset is a Polars DataFrame.
 
         Raises:
-            TypeError: If data is not an instance of pl.DataFrame.
+            TypeError: If the provided dataset is not a Polars DataFrame.
         """
         if not isinstance(self.data, pl.DataFrame):
             raise TypeError("Data must be a Polars DataFrame")
 
     def _validate_colvals(self) -> None:
         """
-        Validate that all required columns are present in the dataset.
+        Ensures that all required columns exist in the dataset.
 
         Raises:
             ValueError: If one or more required columns are missing.
         """
-        list_defined_columns: List[str] = [
+        required_columns = [
             self.subject_col,
             self.seq_col,
             self.period_col,
@@ -89,30 +113,25 @@ class Crossover2x2:
             self.conc_col,
             self.form_col,
         ]
-
-        missing_columns: List[str] = [
-            col_name
-            for col_name in list_defined_columns
-            if col_name not in self.data.columns
+        missing_columns = [
+            col for col in required_columns if col not in self.data.columns
         ]
-
         if missing_columns:
             raise ValueError(
-                f"Required column(s) not found in dataset: {', '.join(missing_columns)}"
+                f"Required column(s) missing: {', '.join(missing_columns)}"
             )
 
-    def calculate_auc(self) -> pl.DataFrame:
+    def _calculate_auc(self) -> pl.DataFrame:
         """
-        Calculate the Area Under the Curve (AUC) for concentration over time.
+        Computes the Area Under the Curve (AUC) using the trapezoidal rule.
 
-        The method groups the data by subject, period, and formulation, aggregates
-        the time and concentration columns, computes the AUC for each group using the
-        trapezoidal rule, adds the computed AUC as a new column, and sorts the results.
+        AUC represents the total drug exposure over time. The trapezoidal rule is used
+        because it does not assume a specific PK model and provides a simple, robust estimate.
 
         Returns:
-            pl.DataFrame: A DataFrame with an additional 'AUC' column.
+            pl.DataFrame: A new dataframe with an additional 'AUC' column.
         """
-        grouped_df: pl.DataFrame = self.data.group_by(
+        grouped_df = self.data.group_by(
             [self.subject_col, self.period_col, self.form_col]
         ).agg(
             [
@@ -120,14 +139,63 @@ class Crossover2x2:
                 pl.col(self.conc_col),
             ]
         )
-
-        auc_vals: List[float] = [
+        auc_vals = [
             np.trapezoid(row[self.conc_col], row[self.time_col])
             for row in grouped_df.to_dicts()
         ]
+        return grouped_df.with_columns(pl.Series("AUC", auc_vals))
 
-        grouped_df = grouped_df.with_columns(pl.Series("AUC", auc_vals)).sort(
-            [pl.col(self.subject_col), pl.col(self.period_col), pl.col(self.form_col)]
+    def _calculate_cmax(self) -> pl.DataFrame:
+        """
+        Computes Cmax, the maximum observed drug concentration.
+
+        Cmax is a critical metric in bioequivalence since it indicates the peak drug exposure.
+
+        Returns:
+            pl.DataFrame: A dataframe with an additional 'Cmax' column.
+        """
+        cmax_df = self.data.group_by(
+            [self.subject_col, self.period_col, self.form_col]
+        ).agg(pl.col(self.conc_col).max().alias("Cmax"))
+        return self.df_params.join(
+            cmax_df, on=[self.subject_col, self.period_col, self.form_col]
         )
 
-        return grouped_df
+    def _calculate_tmax(self) -> pl.DataFrame:
+        """
+        Computes Tmax, the time at which Cmax occurs.
+
+        Tmax represents the time when the drug reaches its peak concentration.
+        If multiple time points have the same Cmax, the earliest occurrence is selected.
+
+        Returns:
+            pl.DataFrame: A dataframe with an additional 'Tmax' column.
+        """
+        tmax_df = (
+            self.data.filter(
+                pl.col(self.conc_col)
+                == pl.col(self.conc_col)
+                .max()
+                .over([self.subject_col, self.period_col, self.form_col])
+            )
+            .group_by([self.subject_col, self.period_col, self.form_col])
+            .agg(pl.col(self.time_col).min().alias("Tmax"))
+        )
+        return self.df_params.join(
+            tmax_df, on=[self.subject_col, self.period_col, self.form_col]
+        )
+
+    def _calculate_log_transform(self) -> pl.DataFrame:
+        """
+        Computes log-transformed BE metrics for AUC and Cmax and adds them alongside the raw metrics.
+        Tmax is not log-transformed.
+
+        Returns:
+            pl.DataFrame: A dataframe with additional columns 'log_AUC' and 'log_Cmax'.
+        """
+        return self.df_params.with_columns(
+            [
+                pl.col("AUC").log().alias("log_AUC"),
+                pl.col("Cmax").log().alias("log_Cmax"),
+            ]
+        )
