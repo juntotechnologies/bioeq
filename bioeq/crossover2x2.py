@@ -119,7 +119,7 @@ class Crossover2x2:
         ]
         if missing_columns:
             raise ValueError(
-                f"Required column(s) missing: {', '.join(missing_columns)}"
+                f"Required column(s) not found in dataset: {', '.join(missing_columns)}"
             )
 
     def _calculate_auc(self) -> pl.DataFrame:
