@@ -5,32 +5,38 @@
 ## Setup Steps
 
 ### 1. Initialize Repository
-- Create a repository on GitHub.  
-- Clone it locally.  
+
+- Create a repository on GitHub.
+- Clone it locally.
 - Run "poetry init" to set up the Python package repository structure.
 
 ### 2. Python Version Management
-- Install Python versions globally using "brew install python@x.11".  
-  Example: "brew install python@3.10".  
+
+- Install Python versions globally using "brew install python@x.11".
+  Example: "brew install python@3.10".
 - View globally installed Python versions with "brew list".
 
 ### 3. Add Dependencies
+
 - Add development dependencies using "poetry add --group dev <deps>".
   Example: "poetry add --group dev black"
 
 ### 4. Virtual Environment (venv) Management
-- Check the active venv source using "which python" or "which python3".  
-- If your terminal signature indicates a version (e.g., 3.11.1), you are in a virtual environment.  
-- **Note:** The "deactivate" command works only for venv environments (Python's built-in virtual environment) and is not applicable to uv.  
+
+- Check the active venv source using "which python" or "which python3".
+- If your terminal signature indicates a version (e.g., 3.11.1), you are in a virtual environment.
+- **Note:** The "deactivate" command works only for venv environments (Python's built-in virtual environment) and is not applicable to uv.
 - To deactivate a venv environment, use the "deactivate" command.
 
 ### 5. Local Package Installation
-- Install the local package for testing with:  
+
+- Install the local package for testing with:
   "poetry install"
 
 ### 6. Running Tests
 
 #### With tox
+
 - Use tox for testing whenever possible, as it ensures:
   - Clean and isolated environments.
   - Consistent execution of tests across Python versions.
@@ -41,26 +47,29 @@
   - Run a specific environment: "tox -e py311".
 
 #### With pytest Directly
-- Use pytest directly for rapid test iteration or debugging during development.  
-- Example:  
+
+- Use pytest directly for rapid test iteration or debugging during development.
+- Example:
   "pytest tests/test_example.py"
   - Faster for debugging specific tests as it skips tox's environment setup.
   - Ideal for interactive development workflows.
 
-#### Suggested Workflow:
+#### Suggested Workflow
+
 - **During Active Development**: Use pytest directly for speed and debugging (`poetry run pytest`) in repo root
 - **For Reproducible Testing and CI**: Use tox to ensure consistency across environments and dependencies.
 
 ### 7. Formatting Code
+
 - Use tox to check and fix code formatting:
-  - Check formatting:  
+  - Check formatting:
     "tox -e format"
-  - Automatically fix formatting:  
+  - Automatically fix formatting:
     "tox -e format-fix"
 
 ---
 
-## If trying to use poetry to test package locally on jupyter notebook, read below:
+## If trying to use poetry to test package locally on jupyter notebook, read below
 
 #### Setting Up a Poetry Environment with Jupyter Notebook Integration
 
@@ -69,15 +78,15 @@ Follow these steps to create a new Poetry environment, install it as a Jupyter k
 ## 1. Create a New Poetry Environment
 
 1. Initialize a new Poetry environment:
-    
+
     `poetry init`
-    
+
     Follow the prompts to set up your `pyproject.toml`.
-    
+
 2. If you already have an existing `pyproject.toml`, install dependencies:
-    
+
     `poetry install`
-    
+
 ---
 
 ## 2. Add Required Dependencies
@@ -92,18 +101,15 @@ Install Jupyter and any additional dependencies required for development:
 
 Run the following command to add the Poetry environment to Jupyter as a kernel:
 
-`poetry run python -m ipykernel install \
-    --user \
-    --name="bioeq-py$(poetry run python --version | cut -d' ' -f2 | cut -d. -f1-2)" \
-    --display-name "Python (bioeq, Python $(poetry run python --version | cut -d' ' -f2 | cut -d. -f1-2))"`
+`poetry run python -m ipykernel install --user --name="$(poetry run python -c 'import sys, tomllib; print(tomllib.load(sys.stdin.buffer)["tool"]["poetry"]["name"])' < pyproject.toml)-py$(python --version | cut -d' ' -f2 | cut -d. -f1-2)" --display-name "Python ($(poetry run python -c 'import sys, tomllib; print(tomllib.load(sys.stdin.buffer)["tool"]["poetry"]["name"])' < pyproject.toml), Python $(python --version | cut -d' ' -f2 | cut -d. -f1-2))"`
 
 This ensures the Poetry environment is installed as a Jupyter kernel with a clean name.
 
-## - If you'd like to uninstall a previously created kernel, use this following command:
+## - If you'd like to uninstall a previously created kernel, use this following command
 
 `poetry run jupyter kernelspec uninstall <Jupyter Kernel Name>`
 
-## - If you'd like to show the current kernels:
+## - If you'd like to show the current kernels
 
 `poetry run jupyter kernelspec list`
 

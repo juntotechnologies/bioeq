@@ -2,7 +2,6 @@ import polars as pl
 import numpy as np
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
-from typing import List
 
 
 class Crossover2x2:
