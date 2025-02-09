@@ -261,21 +261,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Crossover2x2">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#bioeq.crossover2x2.Crossover2x2.calculate_auc" class="md-nav__link">
-    <span class="md-ellipsis">
-      calculate_auc
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
     </ul>
@@ -337,21 +322,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Crossover2x2">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#bioeq.crossover2x2.Crossover2x2.calculate_auc" class="md-nav__link">
-    <span class="md-ellipsis">
-      calculate_auc
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
     </ul>
@@ -380,8 +350,6 @@
 
 <a id="bioeq.crossover2x2"></a>
     <div class="doc doc-contents first">
-
-        <p>2x2 crossover Design Code</p>
 
 
 
@@ -413,7 +381,15 @@
     <div class="doc doc-contents ">
 
 
-        <p>A class to perform operations on a 2x2 crossover design dataset.</p>
+        <p>A class to analyze a 2x2 crossover study dataset and compute bioequivalence (BE) metrics.</p>
+<p>This class processes PK data collected from a 2x2 crossover design, a common structure for
+bioequivalence trials where each subject receives two different formulations in two separate periods.</p>
+<p>The class performs the following calculations:
+- AUC (Area Under the Curve): Estimates drug exposure over time using the trapezoidal rule.
+- Cmax (Maximum Concentration): Extracts the highest observed drug concentration.
+- Tmax (Time to Cmax): Determines the time at which Cmax occurs.</p>
+<p>In addition to the raw metrics, log-transformed values for AUC and Cmax are computed
+and added to the output dataframe. Tmax remains untransformed.</p>
 
 
 <p><span class="doc-section-title">Attributes:</span></p>
@@ -433,7 +409,7 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The input dataset.</p>
+                <p>The input dataset containing PK measurements.</p>
               </div>
             </td>
           </tr>
@@ -455,7 +431,7 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Column name representing the sequence.</p>
+                <p>Column name representing the treatment sequence.</p>
               </div>
             </td>
           </tr>
@@ -466,7 +442,7 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Column name representing the period.</p>
+                <p>Column name representing the study period.</p>
               </div>
             </td>
           </tr>
@@ -488,7 +464,7 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Column name representing concentration values.</p>
+                <p>Column name representing drug concentration values.</p>
               </div>
             </td>
           </tr>
@@ -499,18 +475,18 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Column name representing the formulation.</p>
+                <p>Column name representing the drug formulation (Test/Reference).</p>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="bioeq.crossover2x2.Crossover2x2.simdata">simdata</span></code></td>
+            <td><code><span title="bioeq.crossover2x2.Crossover2x2.df_params">df_params</span></code></td>
             <td>
                   <code><span title="polars.DataFrame">DataFrame</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>A reference dataset loaded from a remote CSV.</p>
+                <p>A dataframe storing computed AUC, Cmax, Tmax, and the log-transformed values for AUC and Cmax.</p>
               </div>
             </td>
           </tr>
@@ -524,7 +500,12 @@
 
               <details class="quote">
                 <summary>Source code in <code>bioeq/crossover2x2.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 11</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
 <span class="normal"> 12</span>
 <span class="normal"> 13</span>
 <span class="normal"> 14</span>
@@ -646,19 +627,98 @@
 <span class="normal">130</span>
 <span class="normal">131</span>
 <span class="normal">132</span>
-<span class="normal">133</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Crossover2x2</span><span class="p">:</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Crossover2x2</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class to perform operations on a 2x2 crossover design dataset.</span>
+<span class="sd">    A class to analyze a 2x2 crossover study dataset and compute bioequivalence (BE) metrics.</span>
+
+<span class="sd">    This class processes PK data collected from a 2x2 crossover design, a common structure for</span>
+<span class="sd">    bioequivalence trials where each subject receives two different formulations in two separate periods.</span>
+
+<span class="sd">    The class performs the following calculations:</span>
+<span class="sd">    - AUC (Area Under the Curve): Estimates drug exposure over time using the trapezoidal rule.</span>
+<span class="sd">    - Cmax (Maximum Concentration): Extracts the highest observed drug concentration.</span>
+<span class="sd">    - Tmax (Time to Cmax): Determines the time at which Cmax occurs.</span>
+
+<span class="sd">    In addition to the raw metrics, log-transformed values for AUC and Cmax are computed</span>
+<span class="sd">    and added to the output dataframe. Tmax remains untransformed.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        data (pl.DataFrame): The input dataset.</span>
+<span class="sd">        data (pl.DataFrame): The input dataset containing PK measurements.</span>
 <span class="sd">        subject_col (str): Column name representing the subject identifier.</span>
-<span class="sd">        seq_col (str): Column name representing the sequence.</span>
-<span class="sd">        period_col (str): Column name representing the period.</span>
+<span class="sd">        seq_col (str): Column name representing the treatment sequence.</span>
+<span class="sd">        period_col (str): Column name representing the study period.</span>
 <span class="sd">        time_col (str): Column name representing time values.</span>
-<span class="sd">        conc_col (str): Column name representing concentration values.</span>
-<span class="sd">        form_col (str): Column name representing the formulation.</span>
-<span class="sd">        simdata (pl.DataFrame): A reference dataset loaded from a remote CSV.</span>
+<span class="sd">        conc_col (str): Column name representing drug concentration values.</span>
+<span class="sd">        form_col (str): Column name representing the drug formulation (Test/Reference).</span>
+<span class="sd">        df_params (pl.DataFrame): A dataframe storing computed AUC, Cmax, Tmax, and the log-transformed values for AUC and Cmax.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -672,54 +732,72 @@
         <span class="n">form_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize the Crossover2x2 object.</span>
+<span class="sd">        Initializes the Crossover2x2 class and computes bioequivalence metrics.</span>
 
-<span class="sd">        Loads a reference CSV into simdata, sets dataset and column attributes,</span>
-<span class="sd">        and validates the input data.</span>
+<span class="sd">        This method validates the dataset, ensures required columns exist, and sequentially</span>
+<span class="sd">        computes AUC, Cmax, and Tmax, along with log-transformed versions for AUC and Cmax.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            data (pl.DataFrame): Input dataset.</span>
+<span class="sd">            data (pl.DataFrame): The dataset containing PK data.</span>
 <span class="sd">            subject_col (str): Column name for the subject identifier.</span>
-<span class="sd">            seq_col (str): Column name for the sequence.</span>
-<span class="sd">            period_col (str): Column name for the period.</span>
-<span class="sd">            time_col (str): Column name for time values.</span>
-<span class="sd">            conc_col (str): Column name for concentration values.</span>
-<span class="sd">            form_col (str): Column name for the formulation.</span>
+<span class="sd">            seq_col (str): Column name for the treatment sequence.</span>
+<span class="sd">            period_col (str): Column name for the study period.</span>
+<span class="sd">            time_col (str): Column name for time measurements.</span>
+<span class="sd">            conc_col (str): Column name for drug concentration measurements.</span>
+<span class="sd">            form_col (str): Column name for formulation labels (Test/Reference).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If `data` is not a Polars DataFrame.</span>
+<span class="sd">            ValueError: If required columns are missing in `data`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">url1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv&quot;</span>
-        <span class="p">)</span>
+        <span class="c1"># Load external simulated dataset for reference (not used in calculations)</span>
+        <span class="n">url1</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">simdata</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">url1</span><span class="p">)</span>
+
+        <span class="c1"># Store dataset and column names</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subject_col</span> <span class="o">=</span> <span class="n">subject_col</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seq_col</span> <span class="o">=</span> <span class="n">seq_col</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">period_col</span> <span class="o">=</span> <span class="n">period_col</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_col</span> <span class="o">=</span> <span class="n">time_col</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conc_col</span> <span class="o">=</span> <span class="n">conc_col</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">form_col</span> <span class="o">=</span> <span class="n">form_col</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">subject_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">subject_col</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seq_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">seq_col</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">period_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">period_col</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">time_col</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conc_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">conc_col</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">form_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">form_col</span>
-
+        <span class="c1"># Validate input dataset structure and required columns</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_data</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_colvals</span><span class="p">()</span>
 
+        <span class="c1"># Compute BE metrics in sequence</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_auc</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_cmax</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_tmax</span><span class="p">()</span>
+
+        <span class="c1"># Compute log-transformed BE metrics for AUC and Cmax and add alongside raw metrics.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_log_transform</span><span class="p">()</span>
+
+        <span class="c1"># Sort final dataframe by subject identifier, formulation, and period.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_params</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_col</span><span class="p">]</span>
+        <span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validate that the provided data is a Polars DataFrame.</span>
+<span class="sd">        Ensures the dataset is a Polars DataFrame.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            TypeError: If data is not an instance of pl.DataFrame.</span>
+<span class="sd">            TypeError: If the provided dataset is not a Polars DataFrame.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Data must be a Polars DataFrame&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_colvals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validate that all required columns are present in the dataset.</span>
+<span class="sd">        Ensures that all required columns exist in the dataset.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If one or more required columns are missing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">list_defined_columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">required_columns</span> <span class="o">=</span> <span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">subject_col</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">seq_col</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">period_col</span><span class="p">,</span>
@@ -727,30 +805,25 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">conc_col</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">form_col</span><span class="p">,</span>
         <span class="p">]</span>
-
-        <span class="n">missing_columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">col_name</span>
-            <span class="k">for</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="n">list_defined_columns</span>
-            <span class="k">if</span> <span class="n">col_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span>
+        <span class="n">missing_columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">required_columns</span> <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span>
         <span class="p">]</span>
-
         <span class="k">if</span> <span class="n">missing_columns</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Required column(s) not found in dataset: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_columns</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Required column(s) missing: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_columns</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_auc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_auc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate the Area Under the Curve (AUC) for concentration over time.</span>
+<span class="sd">        Computes the Area Under the Curve (AUC) using the trapezoidal rule.</span>
 
-<span class="sd">        The method groups the data by subject, period, and formulation, aggregates</span>
-<span class="sd">        the time and concentration columns, computes the AUC for each group using the</span>
-<span class="sd">        trapezoidal rule, adds the computed AUC as a new column, and sorts the results.</span>
+<span class="sd">        AUC represents the total drug exposure over time. The trapezoidal rule is used</span>
+<span class="sd">        because it does not assume a specific PK model and provides a simple, robust estimate.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            pl.DataFrame: A DataFrame with an additional &#39;AUC&#39; column.</span>
+<span class="sd">            pl.DataFrame: A new dataframe with an additional &#39;AUC&#39; column.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">grouped_df</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span>
+        <span class="n">grouped_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span>
             <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_col</span><span class="p">]</span>
         <span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
             <span class="p">[</span>
@@ -758,17 +831,66 @@
                 <span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conc_col</span><span class="p">),</span>
             <span class="p">]</span>
         <span class="p">)</span>
-
-        <span class="n">auc_vals</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">auc_vals</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">np</span><span class="o">.</span><span class="n">trapezoid</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">conc_col</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time_col</span><span class="p">])</span>
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">grouped_df</span><span class="o">.</span><span class="n">to_dicts</span><span class="p">()</span>
         <span class="p">]</span>
+        <span class="k">return</span> <span class="n">grouped_df</span><span class="o">.</span><span class="n">with_columns</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="s2">&quot;AUC&quot;</span><span class="p">,</span> <span class="n">auc_vals</span><span class="p">))</span>
 
-        <span class="n">grouped_df</span> <span class="o">=</span> <span class="n">grouped_df</span><span class="o">.</span><span class="n">with_columns</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="s2">&quot;AUC&quot;</span><span class="p">,</span> <span class="n">auc_vals</span><span class="p">))</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_col</span><span class="p">),</span> <span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period_col</span><span class="p">),</span> <span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">form_col</span><span class="p">)]</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_cmax</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes Cmax, the maximum observed drug concentration.</span>
+
+<span class="sd">        Cmax is a critical metric in bioequivalence since it indicates the peak drug exposure.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pl.DataFrame: A dataframe with an additional &#39;Cmax&#39; column.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cmax_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_col</span><span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conc_col</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;Cmax&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_params</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">cmax_df</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_col</span><span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">grouped_df</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_tmax</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes Tmax, the time at which Cmax occurs.</span>
+
+<span class="sd">        Tmax represents the time when the drug reaches its peak concentration.</span>
+<span class="sd">        If multiple time points have the same Cmax, the earliest occurrence is selected.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pl.DataFrame: A dataframe with an additional &#39;Tmax&#39; column.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tmax_df</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conc_col</span><span class="p">)</span>
+                <span class="o">==</span> <span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conc_col</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">max</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">over</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_col</span><span class="p">])</span>
+            <span class="p">)</span>
+            <span class="o">.</span><span class="n">group_by</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_col</span><span class="p">])</span>
+            <span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_col</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;Tmax&quot;</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_params</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">tmax_df</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_col</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_log_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes log-transformed BE metrics for AUC and Cmax and adds them alongside the raw metrics.</span>
+<span class="sd">        Tmax is not log-transformed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pl.DataFrame: A dataframe with additional columns &#39;log_AUC&#39; and &#39;log_Cmax&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_params</span><span class="o">.</span><span class="n">with_columns</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;AUC&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">()</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;log_AUC&quot;</span><span class="p">),</span>
+                <span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;Cmax&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">()</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;log_Cmax&quot;</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -783,112 +905,6 @@
 
 
 
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="bioeq.crossover2x2.Crossover2x2.calculate_auc" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">calculate_auc</span><span class="p">()</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Calculate the Area Under the Curve (AUC) for concentration over time.</p>
-<p>The method groups the data by subject, period, and formulation, aggregates
-the time and concentration columns, computes the AUC for each group using the
-trapezoidal rule, adds the computed AUC as a new column, and sorts the results.</p>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="polars.DataFrame">DataFrame</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>pl.DataFrame: A DataFrame with an additional 'AUC' column.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-            <details class="quote">
-              <summary>Source code in <code>bioeq/crossover2x2.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_auc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate the Area Under the Curve (AUC) for concentration over time.</span>
-
-<span class="sd">    The method groups the data by subject, period, and formulation, aggregates</span>
-<span class="sd">    the time and concentration columns, computes the AUC for each group using the</span>
-<span class="sd">    trapezoidal rule, adds the computed AUC as a new column, and sorts the results.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        pl.DataFrame: A DataFrame with an additional &#39;AUC&#39; column.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">grouped_df</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span>
-        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_col</span><span class="p">]</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
-        <span class="p">[</span>
-            <span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_col</span><span class="p">),</span>
-            <span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conc_col</span><span class="p">),</span>
-        <span class="p">]</span>
-    <span class="p">)</span>
-
-    <span class="n">auc_vals</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">trapezoid</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">conc_col</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time_col</span><span class="p">])</span>
-        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">grouped_df</span><span class="o">.</span><span class="n">to_dicts</span><span class="p">()</span>
-    <span class="p">]</span>
-
-    <span class="n">grouped_df</span> <span class="o">=</span> <span class="n">grouped_df</span><span class="o">.</span><span class="n">with_columns</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="s2">&quot;AUC&quot;</span><span class="p">,</span> <span class="n">auc_vals</span><span class="p">))</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_col</span><span class="p">),</span> <span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period_col</span><span class="p">),</span> <span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">form_col</span><span class="p">)]</span>
-    <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">grouped_df</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
 
 
 
