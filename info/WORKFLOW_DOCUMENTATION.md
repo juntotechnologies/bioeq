@@ -39,7 +39,7 @@ Create a dir in the root named `notebooks` and create a `test.ipynb` in there us
 
 From there, assuming you're working on `vs-code`/`positron`, you have to create a kernel from a venv that `positron` can detect. First, add the necessary deps (e.g. `poetry add pathlib jupyter ipykernel notebook tomli`). Next, run `poetry install`, and make the poetry env visible to jupyter notebooks as a kernel. To do that, run the following command in a terminal, making sure to sub in your package information where necessary:
 
-`poetry run python -m ipykernel install --user --name="bioeq-py$(python --version | cut -d' ' -f2 | cut -d. -f1-2)" --display-name "Python (bioeq, Python $(python --version | cut -d' ' -f2 | cut -d. -f1-2))"`
+`poetry run python -m ipykernel install --user --name="$(poetry run python -c 'import sys, tomllib; print(tomllib.load(sys.stdin.buffer)["tool"]["poetry"]["name"])' < pyproject.toml)-py$(python --version | cut -d' ' -f2 | cut -d. -f1-2)" --display-name "Python ($(poetry run python -c 'import sys, tomllib; print(tomllib.load(sys.stdin.buffer)["tool"]["poetry"]["name"])' < pyproject.toml), Python $(python --version | cut -d' ' -f2 | cut -d. -f1-2))"`
 
 The command above will make the kernel available to the notebook, and you can go ahead and select it with the notebook open. Usually there will be a button on the top right that will allow you to scroll through the detected environments and pick one you generated for the package you're working on.
 

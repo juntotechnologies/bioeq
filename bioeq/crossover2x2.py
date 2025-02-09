@@ -1,5 +1,7 @@
 import polars as pl
 import numpy as np
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
 from typing import List
 
 
@@ -132,7 +134,7 @@ class Crossover2x2:
             pl.DataFrame: A new dataframe with an additional 'AUC' column.
         """
         grouped_df = self.data.group_by(
-            [self.subject_col, self.period_col, self.form_col]
+            [self.subject_col, self.period_col, self.seq_col, self.form_col]
         ).agg(
             [
                 pl.col(self.time_col),
@@ -199,3 +201,46 @@ class Crossover2x2:
                 pl.col("Cmax").log().alias("log_Cmax"),
             ]
         )
+
+    def run_anova(self, metric: str) -> None:
+        """
+        Performs a classical ANOVA on the specified log-transformed metric (e.g., 'log_AUC' or 'log_Cmax').
+
+        The model includes fixed effects for formulation, period, and sequence.
+
+        Args:
+            metric (str): The column name of the metric to analyze.
+        """
+        # Convert the aggregated dataframe to a pandas DataFrame for statsmodels compatibility.
+        df = self.df_params.to_pandas()
+        # Build the ANOVA model formula.
+        formula = (
+            f"{metric} ~ C({self.form_col}) + C({self.period_col}) + C({self.seq_col})"
+        )
+        # Fit the ordinary least squares model.
+        model = smf.ols(formula, data=df).fit()
+        # Generate the ANOVA table using Type II sums of squares.
+        anova_table = sm.stats.anova_lm(model, typ=2)
+        print("ANOVA Results for", metric)
+        print(anova_table)
+
+    def run_nlme(self, metric: str) -> None:
+        """
+        Performs a mixed-effects (NLME) analysis on the specified log-transformed metric (e.g., 'log_AUC' or 'log_Cmax').
+
+        The model includes fixed effects for formulation, period, and sequence, and a random intercept for each subject.
+
+        Args:
+            metric (str): The column name of the metric to analyze.
+        """
+        # Convert the aggregated dataframe to a pandas DataFrame for statsmodels compatibility.
+        df = self.df_params.to_pandas()
+        # Build the mixed-effects model formula.
+        formula = (
+            f"{metric} ~ C({self.form_col}) + C({self.period_col}) + C({self.seq_col})"
+        )
+        # Fit the mixed-effects model with subject as the grouping factor.
+        model = smf.mixedlm(formula, data=df, groups=df[self.subject_col])
+        mdf = model.fit()
+        print("Mixed Effects Model Results for", metric)
+        print(mdf.summary())
