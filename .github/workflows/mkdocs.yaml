@@ -23,7 +23,7 @@ jobs:
           pip install -e .
 
       - name: Generate documentation with pdoc
-        run: pdoc --html --force --output-dir docs bioeq
+        run: pdoc --output-dir docs bioeq
 
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'
