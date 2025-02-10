@@ -6,28 +6,7 @@ import statsmodels.formula.api as smf
 
 class Crossover2x2:
     """
-    A class to analyze a 2x2 crossover study dataset and compute bioequivalence (BE) metrics.
-
-    This class processes PK data collected from a 2x2 crossover design, a common structure for
-    bioequivalence trials where each subject receives two different formulations in two separate periods.
-
-    The class performs the following calculations:
-    - AUC (Area Under the Curve): Estimates drug exposure over time using the trapezoidal rule.
-    - Cmax (Maximum Concentration): Extracts the highest observed drug concentration.
-    - Tmax (Time to Cmax): Determines the time at which Cmax occurs.
-
-    In addition to the raw metrics, log-transformed values for AUC and Cmax are computed
-    and added to the output dataframe. Tmax remains untransformed.
-
-    Attributes:
-        data (pl.DataFrame): The input dataset containing PK measurements.
-        subject_col (str): Column name representing the subject identifier.
-        seq_col (str): Column name representing the treatment sequence.
-        period_col (str): Column name representing the study period.
-        time_col (str): Column name representing time values.
-        conc_col (str): Column name representing drug concentration values.
-        form_col (str): Column name representing the drug formulation (Test/Reference).
-        df_params (pl.DataFrame): A dataframe storing computed AUC, Cmax, Tmax, and the log-transformed values for AUC and Cmax.
+    Analyze a 2x2 crossover study to compute Area Under the Curve (AUC), Maximum Concentration (Cmax), Time to Cmax (Tmax) (and logAUC, logCmax):
     """
 
     def __init__(
@@ -41,30 +20,13 @@ class Crossover2x2:
         form_col: str,
     ) -> None:
         """
-        Initializes the Crossover2x2 class and computes bioequivalence metrics.
-
-        This method validates the dataset, ensures required columns exist, and sequentially
-        computes AUC, Cmax, and Tmax, along with log-transformed versions for AUC and Cmax.
-
-        Args:
-            data (pl.DataFrame): The dataset containing PK data.
-            subject_col (str): Column name for the subject identifier.
-            seq_col (str): Column name for the treatment sequence.
-            period_col (str): Column name for the study period.
-            time_col (str): Column name for time measurements.
-            conc_col (str): Column name for drug concentration measurements.
-            form_col (str): Column name for formulation labels (Test/Reference).
-
-        Raises:
-            TypeError: If `data` is not a Polars DataFrame.
-            ValueError: If required columns are missing in `data`.
+        Initialize with dataset and column names, validate input, and compute BE metrics.
         """
-        # Load external simulated dataset for reference (not used in calculations)
+        # Load external simulated dataset (unused in calculations)
         url1 = "https://raw.githubusercontent.com/shaunporwal/bioeq/refs/heads/main/simdata/bioeq_simdata_1.csv"
         self.simdata: pl.DataFrame = pl.read_csv(source=url1)
 
-        # Store dataset and column names
-        self.data: pl.DataFrame = data
+        self.data = data
         self.subject_col = subject_col
         self.seq_col = seq_col
         self.period_col = period_col
@@ -72,41 +34,26 @@ class Crossover2x2:
         self.conc_col = conc_col
         self.form_col = form_col
 
-        # Validate input dataset structure and required columns
         self._validate_data()
         self._validate_colvals()
 
-        # Compute BE metrics in sequence
         self.df_params = self._calculate_auc()
         self.df_params = self._calculate_cmax()
         self.df_params = self._calculate_tmax()
-
-        # Compute log-transformed BE metrics for AUC and Cmax and add alongside raw metrics.
         self.df_params = self._calculate_log_transform()
 
-        # Sort final dataframe by subject identifier, formulation, and period.
         self.df_params = self.df_params.sort(
             [self.subject_col, self.form_col, self.period_col]
         )
 
     def _validate_data(self) -> None:
-        """
-        Ensures the dataset is a Polars DataFrame.
-
-        Raises:
-            TypeError: If the provided dataset is not a Polars DataFrame.
-        """
+        """Check that data is a Polars DataFrame."""
         if not isinstance(self.data, pl.DataFrame):
             raise TypeError("Data must be a Polars DataFrame")
 
     def _validate_colvals(self) -> None:
-        """
-        Ensures that all required columns exist in the dataset.
-
-        Raises:
-            ValueError: If one or more required columns are missing.
-        """
-        required_columns = [
+        """Ensure all required columns exist in the dataset."""
+        required = [
             self.subject_col,
             self.seq_col,
             self.period_col,
@@ -114,32 +61,15 @@ class Crossover2x2:
             self.conc_col,
             self.form_col,
         ]
-        missing_columns = [
-            col for col in required_columns if col not in self.data.columns
-        ]
-        if missing_columns:
-            raise ValueError(
-                f"Required column(s) not found in dataset: {', '.join(missing_columns)}"
-            )
+        missing = [col for col in required if col not in self.data.columns]
+        if missing:
+            raise ValueError(f"Missing required column(s): {', '.join(missing)}")
 
     def _calculate_auc(self) -> pl.DataFrame:
-        """
-        Computes the Area Under the Curve (AUC) using the trapezoidal rule.
-
-        AUC represents the total drug exposure over time. The trapezoidal rule is used
-        because it does not assume a specific PK model and provides a simple, robust estimate.
-
-        Returns:
-            pl.DataFrame: A new dataframe with an additional 'AUC' column.
-        """
+        """Compute AUC (Area Under the Curve) using the trapezoidal rule."""
         grouped_df = self.data.group_by(
             [self.subject_col, self.period_col, self.seq_col, self.form_col]
-        ).agg(
-            [
-                pl.col(self.time_col),
-                pl.col(self.conc_col),
-            ]
-        )
+        ).agg([pl.col(self.time_col), pl.col(self.conc_col)])
         auc_vals = [
             np.trapezoid(row[self.conc_col], row[self.time_col])
             for row in grouped_df.to_dicts()
@@ -147,14 +77,7 @@ class Crossover2x2:
         return grouped_df.with_columns(pl.Series("AUC", auc_vals))
 
     def _calculate_cmax(self) -> pl.DataFrame:
-        """
-        Computes Cmax, the maximum observed drug concentration.
-
-        Cmax is a critical metric in bioequivalence since it indicates the peak drug exposure.
-
-        Returns:
-            pl.DataFrame: A dataframe with an additional 'Cmax' column.
-        """
+        """Compute Cmax (maximum concentration)."""
         cmax_df = self.data.group_by(
             [self.subject_col, self.period_col, self.form_col]
         ).agg(pl.col(self.conc_col).max().alias("Cmax"))
@@ -163,15 +86,7 @@ class Crossover2x2:
         )
 
     def _calculate_tmax(self) -> pl.DataFrame:
-        """
-        Computes Tmax, the time at which Cmax occurs.
-
-        Tmax represents the time when the drug reaches its peak concentration.
-        If multiple time points have the same Cmax, the earliest occurrence is selected.
-
-        Returns:
-            pl.DataFrame: A dataframe with an additional 'Tmax' column.
-        """
+        """Compute Tmax (time when Cmax occurs)."""
         tmax_df = (
             self.data.filter(
                 pl.col(self.conc_col)
@@ -187,13 +102,7 @@ class Crossover2x2:
         )
 
     def _calculate_log_transform(self) -> pl.DataFrame:
-        """
-        Computes log-transformed BE metrics for AUC and Cmax and adds them alongside the raw metrics.
-        Tmax is not log-transformed.
-
-        Returns:
-            pl.DataFrame: A dataframe with additional columns 'log_AUC' and 'log_Cmax'.
-        """
+        """Compute log-transformed AUC and Cmax."""
         return self.df_params.with_columns(
             [
                 pl.col("AUC").log().alias("log_AUC"),
@@ -202,6 +111,10 @@ class Crossover2x2:
         )
 
     def run_anova(self, metric: str) -> None:
+        """
+        Perform ANOVA for the specified metric.
+        Displays unique levels for formulation, period, and sequence before printing ANOVA results.
+        """
         df = self.df_params.to_pandas()
         unique_form = df[self.form_col].unique()
         unique_period = df[self.period_col].unique()
@@ -221,7 +134,7 @@ class Crossover2x2:
             return
         if len(unique_seq) < 2:
             print(
-                "Error: Sequence is confounded (only one level). Provide data with ≥2 sequence levels."
+                "Error: Sequence is confounded. Provide data with ≥2 sequence levels."
             )
             return
 
@@ -234,6 +147,10 @@ class Crossover2x2:
         print(anova_table)
 
     def run_nlme(self, metric: str) -> None:
+        """
+        Perform a mixed effects model analysis for the specified metric.
+        Displays unique levels for formulation, period, and sequence before printing model summary.
+        """
         df = self.df_params.to_pandas()
         unique_form = df[self.form_col].unique()
         unique_period = df[self.period_col].unique()
@@ -253,7 +170,7 @@ class Crossover2x2:
             return
         if len(unique_seq) < 2:
             print(
-                "Error: Sequence is confounded (only one level). Provide data with ≥2 sequence levels."
+                "Error: Sequence is confounded. Provide data with ≥2 sequence levels."
             )
             return
 
