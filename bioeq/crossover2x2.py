@@ -6,11 +6,7 @@ import statsmodels.formula.api as smf
 
 class Crossover2x2:
     """
-    Analyze a 2x2 crossover study to compute bioequivalence (BE) metrics:
-        - Area Under the Curve (AUC)
-        - Maximum Concentration (Cmax)
-        - Time to Cmax (Tmax)
-    Also computes log-transformed values for AUC and Cmax.
+    Analyze a 2x2 crossover study to compute bioequivalence (BE) metrics (area under the curve (AUC), maximum concentration (Cmax), and time to maximum concentration (Tmax)) and their log-transformed values.
     """
 
     def __init__(
@@ -23,9 +19,7 @@ class Crossover2x2:
         conc_col: str,
         form_col: str,
     ) -> None:
-        """
-        Initialize with dataset and column names, validate input, and compute BE metrics.
-        """
+
         self._data = data
         self._subject_col = subject_col
         self._seq_col = seq_col
