@@ -6,26 +6,26 @@ This directory contains datasets and scripts for pharmacokinetics and bioequival
 
 ## Datasets
 
-- **`be_simdata.csv`**  
+- **`be_R_package_simdata.csv`**
   Simulation data provided by Sungpil Han, who developed an R package for bioequivalence (BE).
 
-- **`adpp.sas7bdat`**  
+- **`adpp.sas7bdat`**
   Deidentified SAS data from a contact with pharmacokinetics expertise.
 
-- **`bioeq_simdata_1.csv`**  
+- **`bioeq_simdata_1.csv`**
   Locally generated data created with `bioeq_simdata_1.py`.
 
-- **`bioeq_simdata_2.csv`**  
+- **`bioeq_simdata_2.csv`**
   CSV version of `adpp.sas7bdat`.
 
 - **`testdata.csv`**
-  Simulation data from someone else's project: https://github.com/statist-bhfz/bioeq/blob/master/testdata.csv
+  Simulation data from someone else's project: <https://github.com/statist-bhfz/bioeq/blob/master/testdata.csv>
 
 ---
 
 ## Scripts
 
-- **`bioeq_simdata_1.py`**  
+- **`bioeq_simdata_1.py`**
   Generates simulation data for bioequivalence calculations in phase I clinical trials.
 
 ---
