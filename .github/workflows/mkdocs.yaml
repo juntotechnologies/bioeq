@@ -1,7 +1,4 @@
-permissions:
-  contents: write
-
-name: Generate Docs
+name: Generate Docs with pdoc
 
 on:
   push:
@@ -22,48 +19,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install mkdocs-material mkdocstrings[python] mkdocs
+          pip install pdoc
           pip install -e .
 
-      - name: Create docs structure
-        run: |
-          mkdir -p docs
-          cat > docs/index.md << 'EOF'
-          # BioEQ Documentation
-
-          ## API Documentation
-
-          ::: bioeq.crossover2x2
-              options:
-                members:
-                  - run_anova
-                  - run_nlme
-          EOF
-          cat > mkdocs.yml << 'EOF'
-          site_name: BioEQ
-          theme:
-            name: material
-          plugins:
-            - search
-            - mkdocstrings:
-                handlers:
-                  python:
-                    options:
-                      filters:
-                        - "!^_[^_]"
-                        - "!^__all__$"
-                        - "!^__version__$"
-                        - "!^__init__$"
-                      group_by_category: true
-                      members_order: alphabetical
-          EOF
-
-      - name: Build docs
-        run: mkdocs build
+      - name: Generate documentation with pdoc
+        run: pdoc --html --force --output-dir docs bioeq
 
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
+          publish_dir: docs
