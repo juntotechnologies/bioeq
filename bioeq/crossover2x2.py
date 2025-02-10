@@ -6,7 +6,11 @@ import statsmodels.formula.api as smf
 
 class Crossover2x2:
     """
-    Analyze a 2x2 crossover study to compute Area Under the Curve (AUC), Maximum Concentration (Cmax), Time to Cmax (Tmax) (and logAUC, logCmax):
+    Analyze a 2x2 crossover study to compute bioequivalence (BE) metrics:
+      - Area Under the Curve (AUC)
+      - Maximum Concentration (Cmax)
+      - Time to Cmax (Tmax)
+    Also computes log-transformed values for AUC and Cmax.
     """
 
     def __init__(
@@ -63,7 +67,9 @@ class Crossover2x2:
         ]
         missing = [col for col in required if col not in self.data.columns]
         if missing:
-            raise ValueError(f"Missing required column(s): {', '.join(missing)}")
+            raise ValueError(
+                f"Required column(s) not found in dataset: {', '.join(missing)}"
+            )
 
     def _calculate_auc(self) -> pl.DataFrame:
         """Compute AUC (Area Under the Curve) using the trapezoidal rule."""
