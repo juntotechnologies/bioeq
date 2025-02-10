@@ -35,7 +35,9 @@ jobs:
 
           ::: bioeq.crossover2x2
               options:
-                members: null
+                members:
+                  - run_anova
+                  - run_nlme
           EOF
           cat > mkdocs.yml << 'EOF'
           site_name: BioEQ
