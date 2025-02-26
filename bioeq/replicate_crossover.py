@@ -577,8 +577,10 @@ class ReplicateCrossover:
             Dictionary containing:
             - 'within_subject_variance': The calculated within-subject variance
             - 'cv_percent': The calculated coefficient of variation as a percentage
+            - 'within_subject_cv': The calculated coefficient of variation as a percentage (alias for backward compatibility)
             - 'parameter': The parameter used for calculation
             - 'n_subjects': Number of subjects included in the calculation
+            - 'mse': The calculated within-subject variance (alias for backward compatibility)
             
         Notes
         -----
@@ -607,8 +609,10 @@ class ReplicateCrossover:
         return {
             "within_subject_variance": mse,
             "cv_percent": cv,
+            "within_subject_cv": cv,
             "parameter": parameter,
-            "n_subjects": len(subject_variances)
+            "n_subjects": len(subject_variances),
+            "mse": mse
         }
         
     def run_rsabe(self, parameter: str = "log_AUC") -> Dict[str, any]:
@@ -642,8 +646,10 @@ class ReplicateCrossover:
             - 'model_summary': Summary of the mixed effects model
             - 'test_ref_diff': Estimated test-reference difference
             - 'within_subject_variance': Within-subject variance for reference product
+            - 'within_subject_cv': Within-subject coefficient of variation for reference product
             - 'rsabe_criterion': Value of the linearized RSABE criterion
             - 'rsabe_criterion_met': Boolean indicating if bioequivalence is established
+            - 'be_conclusion': Boolean indicating if bioequivalence is established (alias for backward compatibility)
             - 'expanded_limits': Expanded BE limits based on reference variability
             - 'point_estimate': Test/Reference ratio as a percentage
             - 'upper_scaled_limit': Upper expanded limit as a percentage
@@ -661,10 +667,9 @@ class ReplicateCrossover:
         Davit, B. M., et al. (2012). Highly Variable Drugs: Observations from Bioequivalence
         Data Submitted to the FDA for New Generic Drug Applications. The AAPS Journal, 14(1), 148-158.
         """
-        # Calculate within-subject CV for the reference product
+        # Calculate within-subject CV
         cv_results = self.calculate_within_subject_cv(parameter)
-        cv = cv_results["cv_percent"]
-        mse = cv_results["within_subject_variance"]
+        within_subject_variance = cv_results["within_subject_variance"]
         
         # Create model formula for mixed effects model
         formula = f"{parameter} ~ C({self.form_col}) + C({self.seq_col}) + C({self.period_col})"
@@ -697,25 +702,25 @@ class ReplicateCrossover:
         point_estimate = np.exp(form_effect) * 100
         
         # Calculate regulatory constant based on CV
-        if cv <= 30:
+        if cv_results["cv_percent"] <= 30:
             # Use standard BE limits for low-variability drugs
             lower_limit = 80
             upper_limit = 125
             regulatory_constant = 0
         else:
             # Scaling factor for highly variable drugs
-            regulatory_constant = (cv / 100) ** 2
+            regulatory_constant = (cv_results["cv_percent"] / 100) ** 2
             
             # Scale the BE limits for high variability
             # Using FDA approach where the limits expand with increasing CV
-            lower_limit = max(80 - (cv - 30), 75)
-            upper_limit = min(125 + (cv - 30), 125)
+            lower_limit = max(80 - (cv_results["cv_percent"] - 30), 75)
+            upper_limit = min(125 + (cv_results["cv_percent"] - 30), 125)
         
         # Standard error
         se = np.sqrt(model_fit.cov_params().loc[term, term])
         
         # Calculate scaled criterion
-        criterion = form_effect ** 2 - regulatory_constant * mse
+        criterion = form_effect ** 2 - regulatory_constant * within_subject_variance
         
         # Calculate 95% upper confidence bound for criterion
         df = model_fit.df_resid
@@ -729,14 +734,17 @@ class ReplicateCrossover:
         results = {
             "model_summary": str(model_fit.summary()),
             "test_ref_diff": form_effect,
-            "within_subject_variance": mse,
+            "within_subject_variance": within_subject_variance,
+            "within_subject_cv": cv_results["within_subject_cv"],
             "rsabe_criterion": criterion,
             "rsabe_criterion_met": be_conclusion,
+            "be_conclusion": be_conclusion,
             "expanded_limits": [lower_limit, upper_limit],
             "point_estimate": point_estimate,
             "upper_scaled_limit": upper_limit,
             "lower_scaled_limit": lower_limit,
-            "reference_scaled_method": "RSABE"
+            "reference_scaled_method": "RSABE",
+            "formula": formula
         }
         
         return results
