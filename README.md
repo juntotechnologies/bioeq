@@ -57,6 +57,27 @@ print(f"Point Estimate: {results['point_estimate']:.2f}%")
 print(f"90% CI: {results['lower_90ci']:.2f}% - {results['upper_90ci']:.2f}%")
 ```
 
+## Documentation
+
+Comprehensive documentation is available in the [docs](./docs) directory:
+
+- **Regulatory Documentation**:
+  - [Validation Strategy](./docs/validation/validation_strategy.md)
+  - [Functional Requirements](./docs/requirements/functional_requirements.md)
+  - [Traceability Matrix](./docs/validation/traceability_matrix.md)
+  - [Algorithmic Specifications](./docs/specifications/algorithmic_specifications.md)
+  - [Regulatory References](./docs/references/regulatory_references.md)
+
+- **Developer Documentation**:
+  - [Development Workflows](./docs/development/DOCUMENTATION.md)
+  - [Notebook Integration](./docs/development/WORKFLOW_DOCUMENTATION.md)
+
+- **Bioequivalence Notes**:
+  - [Detailed Notes](./docs/notes/BE_NOTES.md)
+  - [Concise Summary](./docs/notes/concise_BE_NOTES.md)
+
+For a complete overview of the documentation, see the [docs README](./docs/README.md).
+
 ## Validation and Regulatory Compliance
 
 BioEq is designed with regulatory requirements in mind. The package includes:
@@ -74,21 +95,6 @@ To validate the package calculations:
 # Run the built-in validation suite
 bioeq validate --output validation_report.json
 ```
-
-### Validation Documentation
-
-For regulatory purposes, we maintain a set of validation documents:
-
-- **Validation Strategy**: Overview of our approach to validation
-- **Functional Requirements**: Detailed requirements specification
-- **Traceability Matrix**: Mapping between requirements, implementation, and tests
-- **Algorithmic Specifications**: Detailed descriptions of algorithms with references
-
-These documents can be found in the `docs/` directory.
-
-## Documentation
-
-For comprehensive documentation and examples, please refer to the [notebooks](./notebooks) directory.
 
 ## Requirements
 
