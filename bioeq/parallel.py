@@ -2,20 +2,21 @@ import polars as pl
 import numpy as np
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Union
+from scipy import stats
 
 
-class Crossover2x2:
+class ParallelDesign:
     """
-    Analyze a 2x2 crossover study to compute bioequivalence (BE) metrics and statistical analyses.
+    Analyze a parallel design study to compute bioequivalence (BE) metrics and statistical analyses.
     
-    This class implements the standard methods for analyzing data from a 2x2 crossover 
+    This class implements the standard methods for analyzing data from a parallel design
     bioequivalence study, including computation of:
     - Area under the curve (AUC)
     - Maximum concentration (Cmax)
     - Time to maximum concentration (Tmax)
     - Log-transformed PK parameters
-    - Statistical analyses (ANOVA, mixed effects models)
+    - Statistical analyses (t-tests, ANOVA)
     - Point estimates and 90% confidence intervals for BE assessment
     
     Parameters
@@ -24,10 +25,6 @@ class Crossover2x2:
         Input dataset containing concentration-time profiles
     subject_col : str
         Column name for subject identifiers
-    seq_col : str
-        Column name for sequence information (e.g., "RT", "TR")
-    period_col : str
-        Column name for period information (e.g., 1, 2)
     time_col : str
         Column name for time points
     conc_col : str
@@ -38,25 +35,21 @@ class Crossover2x2:
     Attributes
     ----------
     params_df : pl.DataFrame
-        DataFrame containing calculated PK parameters for each subject/period/formulation
+        DataFrame containing calculated PK parameters for each subject/formulation
     """
 
     def __init__(
         self,
         data: pl.DataFrame,
         subject_col: str,
-        seq_col: str,
-        period_col: str,
         time_col: str,
         conc_col: str,
         form_col: str,
     ) -> None:
-        """Initialize the Crossover2x2 analyzer with study data and column specifications."""
+        """Initialize the ParallelDesign analyzer with study data and column specifications."""
 
         self._data = data
         self._subject_col = subject_col
-        self._seq_col = seq_col
-        self._period_col = period_col
         self._time_col = time_col
         self._conc_col = conc_col
         self._form_col = form_col
@@ -74,7 +67,7 @@ class Crossover2x2:
 
         # Sort the dataframe for better readability
         self.params_df = self._df_params.sort(
-            [self._subject_col, self._form_col, self._period_col]
+            [self._subject_col, self._form_col]
         )
 
     def _validate_data(self) -> None:
@@ -86,8 +79,6 @@ class Crossover2x2:
         """Ensure all required columns exist in the dataset."""
         required = [
             self._subject_col,
-            self._seq_col,
-            self._period_col,
             self._time_col,
             self._conc_col,
             self._form_col,
@@ -108,7 +99,7 @@ class Crossover2x2:
             DataFrame with AUC values added
         """
         grouped_df = self._data.group_by(
-            [self._subject_col, self._period_col, self._seq_col, self._form_col]
+            [self._subject_col, self._form_col]
         ).agg([pl.col(self._time_col), pl.col(self._conc_col)])
         auc_vals = [
             np.trapezoid(row[self._conc_col], row[self._time_col])
@@ -126,10 +117,10 @@ class Crossover2x2:
             DataFrame with Cmax values added
         """
         cmax_df = self._data.group_by(
-            [self._subject_col, self._period_col, self._form_col]
+            [self._subject_col, self._form_col]
         ).agg(pl.col(self._conc_col).max().alias("Cmax"))
         return self._df_params.join(
-            cmax_df, on=[self._subject_col, self._period_col, self._form_col]
+            cmax_df, on=[self._subject_col, self._form_col]
         )
 
     def _calculate_tmax(self) -> pl.DataFrame:
@@ -146,13 +137,13 @@ class Crossover2x2:
                 pl.col(self._conc_col)
                 == pl.col(self._conc_col)
                 .max()
-                .over([self._subject_col, self._period_col, self._form_col])
+                .over([self._subject_col, self._form_col])
             )
-            .group_by([self._subject_col, self._period_col, self._form_col])
+            .group_by([self._subject_col, self._form_col])
             .agg(pl.col(self._time_col).min().alias("Tmax"))
         )
         return self._df_params.join(
-            tmax_df, on=[self._subject_col, self._period_col, self._form_col]
+            tmax_df, on=[self._subject_col, self._form_col]
         )
 
     def _calculate_log_transform(self) -> pl.DataFrame:
@@ -185,13 +176,11 @@ class Crossover2x2:
         half_lives = []
         for row in self._df_params.to_dicts():
             subject = row[self._subject_col]
-            period = row[self._period_col]
             formulation = row[self._form_col]
             
-            # Get concentration-time data for this subject/period/formulation
+            # Get concentration-time data for this subject/formulation
             subject_data = self._data.filter(
                 (pl.col(self._subject_col) == subject) &
-                (pl.col(self._period_col) == period) &
                 (pl.col(self._form_col) == formulation)
             ).sort(self._time_col)
             
@@ -252,7 +241,6 @@ class Crossover2x2:
         
         for row in self._df_params.to_dicts():
             subject = row[self._subject_col]
-            period = row[self._period_col]
             formulation = row[self._form_col]
             t_half = row.get("t_half")
             
@@ -260,10 +248,9 @@ class Crossover2x2:
                 auc_inf_values.append(None)
                 continue
             
-            # Get concentration-time data for this subject/period/formulation
+            # Get concentration-time data for this subject/formulation
             subject_data = self._data.filter(
                 (pl.col(self._subject_col) == subject) &
-                (pl.col(self._period_col) == period) &
                 (pl.col(self._form_col) == formulation)
             ).sort(self._time_col)
             
@@ -302,34 +289,19 @@ class Crossover2x2:
             
         Notes
         -----
-        The function displays unique levels for formulation, period, and sequence before 
-        printing ANOVA results, and performs validation checks.
+        The function performs validation checks and prints ANOVA results.
         """
         df = self._df_params.to_pandas()
         unique_form = df[self._form_col].unique()
-        unique_period = df[self._period_col].unique()
-        unique_seq = df[self._seq_col].unique()
 
         print("Formulation levels:", unique_form)
-        print("Period levels:", unique_period)
-        print("Sequence levels:", unique_seq)
 
         if len(unique_form) < 2:
             error_msg = "Error: Formulation is constant. Provide data with ≥2 formulation levels."
             print(error_msg)
             return {"error": error_msg}
-            
-        if len(unique_period) < 2:
-            error_msg = "Error: Period is constant. Provide data with ≥2 period levels."
-            print(error_msg)
-            return {"error": error_msg}
-            
-        if len(unique_seq) < 2:
-            error_msg = "Error: Sequence is confounded. Provide data with ≥2 sequence levels."
-            print(error_msg)
-            return {"error": error_msg}
 
-        formula = f"{metric} ~ C({self._form_col}) + C({self._period_col}) + C({self._seq_col})"
+        formula = f"{metric} ~ C({self._form_col})"
         model = smf.ols(formula, data=df).fit()
         anova_table = sm.stats.anova_lm(model, typ=2)
         print("ANOVA Results for", metric)
@@ -341,9 +313,9 @@ class Crossover2x2:
             "formula": formula
         }
 
-    def run_nlme(self, metric: str) -> Dict[str, any]:
+    def run_ttest(self, metric: str) -> Dict[str, any]:
         """
-        Perform a mixed effects model analysis for the specified metric.
+        Perform a two-sample t-test for the specified metric.
         
         Parameters
         ----------
@@ -353,47 +325,39 @@ class Crossover2x2:
         Returns
         -------
         Dict
-            Dictionary with mixed effects model results
+            Dictionary with t-test results
             
         Notes
         -----
-        The function displays unique levels for formulation, period, and sequence before 
-        printing model summary, and performs validation checks.
+        The function performs validation checks and prints t-test results.
         """
         df = self._df_params.to_pandas()
         unique_form = df[self._form_col].unique()
-        unique_period = df[self._period_col].unique()
-        unique_seq = df[self._seq_col].unique()
 
         print("Formulation levels:", unique_form)
-        print("Period levels:", unique_period)
-        print("Sequence levels:", unique_seq)
 
-        if len(unique_form) < 2:
-            error_msg = "Error: Formulation is constant. Provide data with ≥2 formulation levels."
-            print(error_msg)
-            return {"error": error_msg}
-            
-        if len(unique_period) < 2:
-            error_msg = "Error: Period is constant. Provide data with ≥2 period levels."
-            print(error_msg)
-            return {"error": error_msg}
-            
-        if len(unique_seq) < 2:
-            error_msg = "Error: Sequence is confounded. Provide data with ≥2 sequence levels."
+        if len(unique_form) != 2:
+            error_msg = f"Error: Exactly 2 formulation levels required for t-test, but found {len(unique_form)}."
             print(error_msg)
             return {"error": error_msg}
 
-        formula = f"{metric} ~ C({self._form_col}) + C({self._period_col}) + C({self._seq_col})"
-        model = smf.mixedlm(formula, data=df, groups=df[self._subject_col])
-        mdf = model.fit()
-        print("Mixed Effects Model Results for", metric)
-        print(mdf.summary())
+        # Split data by formulation
+        group1 = df[df[self._form_col] == unique_form[0]][metric].dropna()
+        group2 = df[df[self._form_col] == unique_form[1]][metric].dropna()
+        
+        # Perform t-test - using scipy stats instead of statsmodels
+        t_stat, p_value = stats.ttest_ind(group1, group2, equal_var=False)
+        
+        print(f"Two-sample t-test for {metric}")
+        print(f"t-statistic: {t_stat:.4f}")
+        print(f"p-value: {p_value:.4f}")
+        print(f"Means: {unique_form[0]}: {group1.mean():.4f}, {unique_form[1]}: {group2.mean():.4f}")
         
         return {
-            "model_summary": mdf.summary(),
-            "model": mdf,
-            "formula": formula
+            "t_statistic": t_stat,
+            "p_value": p_value,
+            "means": {unique_form[0]: group1.mean(), unique_form[1]: group2.mean()},
+            "sample_sizes": {unique_form[0]: len(group1), unique_form[1]: len(group2)}
         }
         
     def calculate_point_estimate(self, metric: str = "log_AUC") -> Dict[str, float]:
@@ -414,24 +378,27 @@ class Crossover2x2:
             print(f"Warning: {metric} may not be log-transformed. Point estimates are valid for log-transformed metrics.")
         
         df = self._df_params.to_pandas()
+        unique_form = df[self._form_col].unique()
+        
+        if len(unique_form) != 2:
+            return {"error": f"Exactly 2 formulation levels required, but found {len(unique_form)}."}
         
         # Filter out rows with missing values
         df_valid = df.dropna(subset=[metric])
         
-        # Fit mixed effects model
-        formula = f"{metric} ~ C({self._form_col}) + C({self._period_col}) + C({self._seq_col})"
-        model = smf.mixedlm(formula, data=df_valid, groups=df_valid[self._subject_col])
-        result = model.fit()
+        # Fit model with formulation as the only factor
+        formula = f"{metric} ~ C({self._form_col})"
+        model = smf.ols(formula, data=df_valid).fit()
         
         # Extract coefficient for Test formulation
-        coef_index = result.params.index[result.params.index.str.contains(self._form_col)]
+        coef_index = model.params.index[model.params.index.str.contains(self._form_col)]
         if len(coef_index) == 0:
             return {"error": f"Could not find coefficient for {self._form_col}"}
             
-        test_ref_diff = result.params[coef_index[0]]
+        test_ref_diff = model.params[coef_index[0]]
         
         # Calculate confidence intervals
-        conf_int = result.conf_int(alpha=0.1)  # 90% CI for bioequivalence
+        conf_int = model.conf_int(alpha=0.1)  # 90% CI for bioequivalence
         lower_ci = conf_int.loc[coef_index[0], 0]
         upper_ci = conf_int.loc[coef_index[0], 1]
         
@@ -532,4 +499,4 @@ class Crossover2x2:
         pl.DataFrame
             DataFrame with PK parameters
         """
-        return self._df_params
+        return self._df_params 
