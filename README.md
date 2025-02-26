@@ -57,6 +57,35 @@ print(f"Point Estimate: {results['point_estimate']:.2f}%")
 print(f"90% CI: {results['lower_90ci']:.2f}% - {results['upper_90ci']:.2f}%")
 ```
 
+## Validation and Regulatory Compliance
+
+BioEq is designed with regulatory requirements in mind. The package includes:
+
+- **Validation Module**: Built-in functionality to validate calculations against known values
+- **Traceability**: Documentation mapping requirements to implementation
+- **Algorithm Documentation**: Detailed descriptions of implemented methods with scientific references
+- **Regulatory References**: Documentation linking to relevant FDA guidance documents
+
+### Running Validation Tests
+
+To validate the package calculations:
+
+```bash
+# Run the built-in validation suite
+bioeq validate --output validation_report.json
+```
+
+### Validation Documentation
+
+For regulatory purposes, we maintain a set of validation documents:
+
+- **Validation Strategy**: Overview of our approach to validation
+- **Functional Requirements**: Detailed requirements specification
+- **Traceability Matrix**: Mapping between requirements, implementation, and tests
+- **Algorithmic Specifications**: Detailed descriptions of algorithms with references
+
+These documents can be found in the `docs/` directory.
+
 ## Documentation
 
 For comprehensive documentation and examples, please refer to the [notebooks](./notebooks) directory.
