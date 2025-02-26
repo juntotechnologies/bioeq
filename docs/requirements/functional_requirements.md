@@ -39,12 +39,21 @@ FR-3.1.4: The system shall implement mixed-effects models with subject as a rand
 FR-3.2.1: The system shall perform t-tests comparing test and reference groups.  
 FR-3.2.2: The system shall perform ANOVA with treatment as the only factor.  
 
-### 3.3 Bioequivalence Assessment
+### 3.3 Replicate Design Analysis
 
-FR-3.3.1: The system shall calculate point estimates for the Test/Reference ratio.  
-FR-3.3.2: The system shall calculate 90% confidence intervals for bioequivalence assessment.  
-FR-3.3.3: The system shall assess whether the calculated intervals fall within the 80-125% bioequivalence limits.  
-FR-3.3.4: The system shall perform analyses on log-transformed PK parameters.  
+FR-3.3.1: The system shall support partial replicate (3-way) crossover designs.  
+FR-3.3.2: The system shall support full replicate (4-way) crossover designs.  
+FR-3.3.3: The system shall calculate within-subject variability for the reference product.  
+FR-3.3.4: The system shall implement reference-scaled average bioequivalence (RSABE) methods for highly variable drugs.  
+FR-3.3.5: The system shall calculate expanded bioequivalence limits based on reference variability.  
+FR-3.3.6: The system shall use mixed-effects models appropriate for replicate designs.  
+
+### 3.4 Bioequivalence Assessment
+
+FR-3.4.1: The system shall calculate point estimates for the Test/Reference ratio.  
+FR-3.4.2: The system shall calculate 90% confidence intervals for bioequivalence assessment.  
+FR-3.4.3: The system shall assess whether the calculated intervals fall within the 80-125% bioequivalence limits.  
+FR-3.4.4: The system shall perform analyses on log-transformed PK parameters.  
 
 ## 4. Data Management Requirements
 

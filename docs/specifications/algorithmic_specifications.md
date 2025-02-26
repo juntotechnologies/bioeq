@@ -170,4 +170,60 @@ Bioequivalence is established if the 90% confidence interval for the test/refere
 #### References
 - FDA Guidance for Industry: Statistical Approaches to Establishing Bioequivalence (2001). Section III.A.
 - European Medicines Agency (2010). *Guideline on the Investigation of Bioequivalence*. Section 4.1.8.
-- Schuirmann, D. J. (1987). A comparison of the two one-sided tests procedure and the power approach for assessing the equivalence of average bioavailability. *Journal of Pharmacokinetics and Biopharmaceutics*, 15(6), 657-680. 
+- Schuirmann, D. J. (1987). A comparison of the two one-sided tests procedure and the power approach for assessing the equivalence of average bioavailability. *Journal of Pharmacokinetics and Biopharmaceutics*, 15(6), 657-680.
+
+## 5. Reference-Scaled Average Bioequivalence (RSABE)
+
+### 5.1 Within-Subject Variability Calculation
+
+#### Implementation Details
+For replicate designs, the within-subject variability of the reference formulation is calculated using the following approach:
+
+1. For each subject, calculate the variance of log-transformed PK parameters (AUC or Cmax) across multiple administrations of the reference product.
+2. Average these variances across all subjects to obtain the mean squared error (MSE), which represents the within-subject variance (s²ᵂᵣ).
+3. Convert this to a coefficient of variation using the formula:
+   
+   ```
+   CV% = sqrt(exp(s²ᵂᵣ) - 1) × 100
+   ```
+
+#### References
+- FDA Guidance for Industry: Statistical Approaches to Establishing Bioequivalence (2001). Section III.B.4.
+- Davit, B. M., et al. (2012). Highly Variable Drugs: Observations from Bioequivalence Data Submitted to the FDA for New Generic Drug Applications. *The AAPS Journal*, 14(1), 148-158.
+
+### 5.2 Reference-Scaled Average Bioequivalence Analysis
+
+#### Implementation Details
+For highly variable drugs (within-subject CV ≥ 30%), the FDA allows scaling of bioequivalence limits based on the variability of the reference product. The approach uses a linearized criterion:
+
+```
+(μᵀ - μᵣ)² - θ·s²ᵂᵣ ≤ 0
+```
+
+where:
+- μᵀ and μᵣ are the means for test and reference products
+- s²ᵂᵣ is the within-subject variance for the reference product
+- θ is a regulatory constant (0.893 for FDA approach)
+
+This criterion can be restated in terms of expanded bioequivalence limits:
+
+```
+exp(±k·sᵂᵣ)
+```
+
+where:
+- k = ln(1.25)/sᵂᵣ if sᵂᵣ < ln(1.25)/ln(√2)
+- k = ln(√2) if sᵂᵣ ≥ ln(1.25)/ln(√2)
+
+This limits the expansion to 50-200% regardless of how variable the reference product is.
+
+The test is implemented using a mixed effects model with the following components:
+1. Fixed effects for sequence, period, and formulation
+2. Random effect for subject (nested within sequence)
+3. Estimation of the test-reference difference and its variance
+4. Application of the linearized criterion
+
+#### References
+- FDA Guidance for Industry: Bioequivalence Studies With Pharmacokinetic Endpoints for Drugs Submitted Under an ANDA (2013).
+- Davit, B. M., et al. (2008). Comparing Generic and Innovator Drugs: A Review of 12 Years of Bioequivalence Data from the United States Food and Drug Administration. *The Annals of Pharmacotherapy*, 42(10), 1493-1497.
+- Haidar, S. H., et al. (2008). Bioequivalence Approaches for Highly Variable Drugs and Drug Products. *Pharmaceutical Research*, 25(1), 237-241. 

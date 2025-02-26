@@ -18,6 +18,12 @@ BioEq is a comprehensive Python package for analyzing pharmacokinetic data in bi
   - ANOVA and t-test analysis
   - Point estimates and 90% confidence intervals
 
+- **Replicate Crossover Design Analysis**:
+  - Support for both partial (3-way) and full (4-way) replicate designs
+  - Within-subject variability assessment for reference formulation
+  - Reference-scaled average bioequivalence (RSABE) for highly variable drugs
+  - Expanded bioequivalence limits based on reference variability
+
 - **Additional Features**:
   - Estimation of elimination half-life
   - Extrapolation of AUC to infinity
@@ -55,6 +61,41 @@ analyzer = Crossover2x2(
 results = analyzer.calculate_point_estimate("log_AUC")
 print(f"Point Estimate: {results['point_estimate']:.2f}%")
 print(f"90% CI: {results['lower_90ci']:.2f}% - {results['upper_90ci']:.2f}%")
+```
+
+### Replicate Crossover Example
+
+```python
+import polars as pl
+from bioeq import ReplicateCrossover
+
+# Load data for a partial replicate (3-way) design
+data = pl.read_csv("replicate_data.csv")
+
+# Initialize analyzer for a partial replicate design
+analyzer = ReplicateCrossover(
+    data=data,
+    design_type="partial",  # Use "full" for 4-way replicate design
+    subject_col="SubjectID",
+    seq_col="Sequence",
+    period_col="Period",
+    time_col="Time",
+    conc_col="Concentration",
+    form_col="Formulation"
+)
+
+# Calculate within-subject CV for the reference product
+cv_results = analyzer.calculate_within_subject_cv("log_AUC")
+print(f"Within-subject CV for reference: {cv_results['cv_percent']:.2f}%")
+
+# If drug is highly variable (CV ≥ 30%), run reference-scaled approach
+if cv_results['cv_percent'] >= 30:
+    rsabe_results = analyzer.run_rsabe("log_AUC")
+    print(f"RSABE criterion met: {rsabe_results['rsabe_criterion_met']}")
+    print(f"Expanded BE limits: {rsabe_results['lower_scaled_limit']:.2f}% - {rsabe_results['upper_scaled_limit']:.2f}%")
+else:
+    # Use standard bioequivalence approach
+    print("Standard bioequivalence assessment recommended (CV < 30%)")
 ```
 
 ## Documentation
