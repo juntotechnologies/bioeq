@@ -7,5 +7,6 @@ except metadata.PackageNotFoundError:
 
 from .crossover2x2 import Crossover2x2
 from .parallel import ParallelDesign
+from .replicate_crossover import ReplicateCrossover
 
-__all__ = ["Crossover2x2", "ParallelDesign"]
+__all__ = ["Crossover2x2", "ParallelDesign", "ReplicateCrossover"]

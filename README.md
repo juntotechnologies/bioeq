@@ -1,3 +1,6 @@
+
+![BioEq Banner](public/readme-banner.png)
+---
 # BioEq
 
 A Python package for performing bioequivalence calculations and analysis.

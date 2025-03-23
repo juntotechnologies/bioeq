@@ -211,6 +211,285 @@ def generate_parallel_data(
     return pl.DataFrame(data)
 
 
+def generate_crossover_2x2(n_subjects=24, seed=42):
+    """
+    Generate simulated data for a 2x2 crossover design
+    """
+    np.random.seed(seed)
+
+    # Define sequences
+    sequences = ["TR", "RT"]
+
+    # Initialize data list
+    data = []
+
+    for subject in range(1, n_subjects + 1):
+        # Assign sequence (alternating)
+        sequence = sequences[(subject - 1) % len(sequences)]
+
+        # Subject-specific parameter
+        subject_effect = np.random.normal(0, 0.2)  # 20% between-subject variability
+
+        for period in range(1, 3):  # 2 periods
+            # Determine formulation based on sequence and period
+            if sequence == "TR":
+                formulation = "Test" if period == 1 else "Reference"
+            else:  # "RT"
+                formulation = "Reference" if period == 1 else "Test"
+
+            # Formulation effect (Test is 95% of Reference)
+            formulation_effect = 0.95 if formulation == "Test" else 1.0
+
+            # Period effect (slight decrease in period 2)
+            period_effect = 1.0 if period == 1 else 0.95
+
+            # Within-subject variability for the period
+            within_subject_effect = np.random.normal(0, 0.1)  # 10% within-subject variability
+
+            # Generate concentration data for this subject/period
+            for time in [0, 0.5, 1, 2, 4, 6, 8, 12, 24]:
+                # Base PK model
+                if time == 0:
+                    conc = 0
+                else:
+                    ka = 1.0  # absorption rate
+                    ke = 0.1  # elimination rate
+                    dose = 100
+                    vd = 10
+
+                    conc = (
+                        (dose * formulation_effect / vd)
+                        * (ka / (ka - ke))
+                        * (np.exp(-ke * time) - np.exp(-ka * time))
+                    )
+
+                # Apply effects (multiplicative on the concentration)
+                conc = conc * np.exp(subject_effect) * period_effect * np.exp(within_subject_effect)
+
+                # Add random error
+                error = np.random.normal(0, 0.05)  # 5% residual error
+                observed_conc = max(0, conc * np.exp(error))
+
+                data.append({
+                    "SubjectID": subject,
+                    "Period": period,
+                    "Sequence": sequence,
+                    "Formulation": formulation,
+                    "Time (hr)": time,
+                    "Concentration (ng/mL)": observed_conc
+                })
+
+    return pl.DataFrame(data)
+
+
+def generate_parallel_design(n_subjects=40, seed=42):
+    """
+    Generate simulated data for a parallel design
+    """
+    np.random.seed(seed)
+
+    # Define formulations
+    formulations = ["Test", "Reference"]
+
+    # Initialize data list
+    data = []
+
+    for subject in range(1, n_subjects + 1):
+        # Assign formulation (alternating)
+        formulation = formulations[(subject - 1) % len(formulations)]
+
+        # Subject-specific parameter
+        subject_effect = np.random.normal(0, 0.3)  # 30% between-subject variability
+
+        # Formulation effect (Test is 95% of Reference)
+        formulation_effect = 0.95 if formulation == "Test" else 1.0
+
+        # Generate concentration data for this subject
+        for time in [0, 0.5, 1, 2, 4, 6, 8, 12, 24]:
+            # Base PK model
+            if time == 0:
+                conc = 0
+            else:
+                ka = 1.0  # absorption rate
+                ke = 0.1  # elimination rate
+                dose = 100
+                vd = 10
+
+                conc = (
+                    (dose * formulation_effect / vd)
+                    * (ka / (ka - ke))
+                    * (np.exp(-ke * time) - np.exp(-ka * time))
+                )
+
+            # Apply effects (multiplicative on the concentration)
+            conc = conc * np.exp(subject_effect)
+
+            # Add random error
+            error = np.random.normal(0, 0.05)  # 5% residual error
+            observed_conc = max(0, conc * np.exp(error))
+
+            data.append({
+                "SubjectID": subject,
+                "Formulation": formulation,
+                "Time (hr)": time,
+                "Concentration (ng/mL)": observed_conc
+            })
+
+    return pl.DataFrame(data)
+
+
+def generate_partial_replicate_data(n_subjects=12, seed=42):
+    """
+    Generate simulated data for a 3-way partial replicate design (TRR, RTR, RRT)
+    
+    This design is commonly used for highly variable drugs and allows for
+    the estimation of within-subject variability for the reference product.
+    """
+    np.random.seed(seed)
+    
+    # Define sequences for partial replicate (TRR, RTR, RRT)
+    sequences = ["TRR", "RTR", "RRT"]
+    
+    # Initialize data list
+    data = []
+    
+    for subject in range(1, n_subjects + 1):
+        # Assign sequence (cycling through sequences)
+        sequence = sequences[(subject - 1) % len(sequences)]
+        
+        # Subject-specific parameter
+        subject_effect = np.random.normal(0, 0.2)  # 20% between-subject variability
+        
+        for period in range(1, 4):  # 3 periods
+            # Determine formulation based on sequence and period
+            if sequence == "TRR":
+                formulation = "Test" if period == 1 else "Reference"
+            elif sequence == "RTR":
+                formulation = "Reference" if period in [1, 3] else "Test"
+            elif sequence == "RRT":
+                formulation = "Reference" if period in [1, 2] else "Test"
+                
+            # Formulation effect (Test is 95% of Reference)
+            formulation_effect = 0.95 if formulation == "Test" else 1.0
+            
+            # Period effect (slight decrease over periods)
+            period_effect = 1.0 - (period - 1) * 0.05
+            
+            # Within-subject variability for the period
+            # Higher within-subject variability (30%) to simulate a highly variable drug
+            within_subject_effect = np.random.normal(0, 0.3)
+            
+            # Generate concentration data for this subject/period
+            for time in [0, 0.5, 1, 2, 4, 6, 8, 12, 24]:
+                # Base PK model
+                if time == 0:
+                    conc = 0
+                else:
+                    ka = 1.0  # absorption rate
+                    ke = 0.1  # elimination rate
+                    dose = 100
+                    vd = 10
+                    
+                    conc = (
+                        (dose * formulation_effect / vd)
+                        * (ka / (ka - ke))
+                        * (np.exp(-ke * time) - np.exp(-ka * time))
+                    )
+                
+                # Apply effects (multiplicative on the concentration)
+                conc = conc * np.exp(subject_effect) * period_effect * np.exp(within_subject_effect)
+                
+                # Add random error
+                error = np.random.normal(0, 0.1)  # 10% residual error
+                observed_conc = max(0, conc * np.exp(error))
+                
+                data.append({
+                    "SubjectID": subject,
+                    "Period": period,
+                    "Sequence": sequence,
+                    "Formulation": formulation,
+                    "Time (hr)": time,
+                    "Concentration (ng/mL)": observed_conc
+                })
+    
+    return pl.DataFrame(data)
+
+
+def generate_full_replicate_data(n_subjects=24, seed=42):
+    """
+    Generate simulated data for a 4-way full replicate design (TRTR, RTRT)
+    
+    This design is commonly used for highly variable drugs and provides the most
+    information about within-subject variability for both test and reference products.
+    """
+    np.random.seed(seed)
+    
+    # Define sequences for full replicate (TRTR, RTRT)
+    sequences = ["TRTR", "RTRT"]
+    
+    # Initialize data list
+    data = []
+    
+    for subject in range(1, n_subjects + 1):
+        # Assign sequence (alternating)
+        sequence = sequences[(subject - 1) % len(sequences)]
+        
+        # Subject-specific parameter
+        subject_effect = np.random.normal(0, 0.2)  # 20% between-subject variability
+        
+        for period in range(1, 5):  # 4 periods
+            # Determine formulation based on sequence and period
+            if sequence == "TRTR":
+                formulation = "Test" if period % 2 == 1 else "Reference"
+            elif sequence == "RTRT":
+                formulation = "Reference" if period % 2 == 1 else "Test"
+                
+            # Formulation effect (Test is 95% of Reference)
+            formulation_effect = 0.95 if formulation == "Test" else 1.0
+            
+            # Period effect (slight decrease over periods)
+            period_effect = 1.0 - (period - 1) * 0.05
+            
+            # Within-subject variability for the period
+            # Higher within-subject variability (30%) to simulate a highly variable drug
+            within_subject_effect = np.random.normal(0, 0.3)
+            
+            # Generate concentration data for this subject/period
+            for time in [0, 0.5, 1, 2, 4, 6, 8, 12, 24]:
+                # Base PK model
+                if time == 0:
+                    conc = 0
+                else:
+                    ka = 1.0  # absorption rate
+                    ke = 0.1  # elimination rate
+                    dose = 100
+                    vd = 10
+                    
+                    conc = (
+                        (dose * formulation_effect / vd)
+                        * (ka / (ka - ke))
+                        * (np.exp(-ke * time) - np.exp(-ka * time))
+                    )
+                
+                # Apply effects (multiplicative on the concentration)
+                conc = conc * np.exp(subject_effect) * period_effect * np.exp(within_subject_effect)
+                
+                # Add random error
+                error = np.random.normal(0, 0.1)  # 10% residual error
+                observed_conc = max(0, conc * np.exp(error))
+                
+                data.append({
+                    "SubjectID": subject,
+                    "Period": period,
+                    "Sequence": sequence,
+                    "Formulation": formulation,
+                    "Time (hr)": time,
+                    "Concentration (ng/mL)": observed_conc
+                })
+    
+    return pl.DataFrame(data)
+
+
 if __name__ == "__main__":
     # Create simdata directory if it doesn't exist
     output_dir = Path("simdata")
@@ -226,4 +505,18 @@ if __name__ == "__main__":
     parallel_data = generate_parallel_data(n_subjects_per_arm=20)
     parallel_file = output_dir / "parallel_simdata.csv"
     parallel_data.write_csv(parallel_file)
-    print(f"Parallel simulated data saved to {parallel_file}") 
+    print(f"Parallel simulated data saved to {parallel_file}")
+    
+    # Generate and save the datasets
+    crossover_2x2_data = generate_crossover_2x2()
+    parallel_design_data = generate_parallel_design()
+    partial_replicate_data = generate_partial_replicate_data()
+    full_replicate_data = generate_full_replicate_data()
+    
+    # Save to CSV files
+    crossover_2x2_data.write_csv(output_dir / "crossover_2x2_simdata.csv")
+    parallel_design_data.write_csv(output_dir / "parallel_design_simdata.csv")
+    partial_replicate_data.write_csv(output_dir / "partial_replicate_simdata.csv")
+    full_replicate_data.write_csv(output_dir / "full_replicate_simdata.csv")
+    
+    print("Simulation data generated and saved to CSV files.") 
