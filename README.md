@@ -1,5 +1,4 @@
-
-![BioEq Banner](public/readme-banner.png)
+![BioEq Banner](https://raw.githubusercontent.com/shaunporwal/bioeq/main/public/readme-banner.png)
 ---
 # BioEq
 
