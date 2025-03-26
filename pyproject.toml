@@ -1,6 +1,6 @@
 [project]
 name = "bioeq"
-version = "0.1.4.1"
+version = "0.1.4.2"
 description = "A Python package for performing bioequivalence calculations and analysis."
 authors = [
     {name = "Shaun Porwal", email = "shaun.porwal@gmail.com"}
